@@ -43,6 +43,8 @@
 @import 'components/pace';
 @import 'components/mobile-menu';
 @import 'components/typeahead';
+@import 'components/site-wide-notice';
+@import 'components/auctions';
 
 @import 'blocks/top-bar';
 @import 'blocks/header';
@@ -89,5 +91,17 @@
 @import 'integrations/woocompare';
 @import 'integrations/ajax-navigation';
 @import 'integrations/mailchimp-for-wp';
+@import 'integrations/woocommerce-extra-product-options';
 
 @import 'responsive';
+
+/* Fix for blur in image catalog */
+.products-carousel .owl-item .product .wp-post-image,
+.section-onsale-product .onsale-product .wp-post-image,
+.section-onsale-product-carousel .onsale-product-carousel .onsale-product .onsale-product-content .wp-post-image,
+li.product:not(.product-card):not(.list-view):not(.product-category) .wp-post-image {
+    width: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}

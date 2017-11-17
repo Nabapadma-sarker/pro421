@@ -45,7 +45,8 @@ $shop_options 	= apply_filters( 'electro_shop_options_args', array(
 			'type'		=> 'select',
 			'data'		=> 'posts',
 			'args'		=> array(
-				'post_type'	=> 'static_block', 'posts_per_page' => -1
+				'post_type'			=> 'static_block',
+				'posts_per_page'	=> -1,
 			)
 		),
 		array(
@@ -168,6 +169,15 @@ $shop_options 	= apply_filters( 'electro_shop_options_args', array(
 			'title'     => esc_html__( 'Enable Related Products', 'electro' ),
 			'type'      => 'switch',
 			'default'   => 1,
+		),
+
+		array(
+			'title'		=> esc_html__( 'Product Gallery Carousel', 'electro' ),
+			'id'		=> 'product_gallery_carousel',
+			'type'		=> 'switch',
+			'on'		=> esc_html__('Enabled', 'electro'),
+			'off'		=> esc_html__('Disabled', 'electro'),
+			'default'	=> 0,
 		),
 
 		array(

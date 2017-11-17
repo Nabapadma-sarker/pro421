@@ -73,6 +73,10 @@ if ( ! class_exists( 'Electro_Meta_Box_Page' ) ) {
 			$meta_box_id 		= self::$meta_box_id;
 			$meta_box_fields 	= self::get_meta_box_fields();
 			$meta_data 			= get_post_meta( $post_id, $meta_box_id, true );
+
+			if( ! is_array( $meta_data ) ) {
+				$meta_data 	= array();
+			}
 		 
 			foreach ( $meta_box_fields as $field ) {
 				$old = isset( $meta_data[$field['id']] ) ? $meta_data[$field['id']] : '';
@@ -100,10 +104,13 @@ if ( ! class_exists( 'Electro_Meta_Box_Page' ) ) {
 		 */
 		public static function output( $post ) {
 
-			$meta_array 		= array();
 			$meta_box_id 		= self::$meta_box_id;
-			$meta_array 		= get_post_meta( $post->ID, $meta_box_id, true );
 			$meta_box_fields 	= self::get_meta_box_fields();
+			$meta_array 		= get_post_meta( $post->ID, $meta_box_id, true );
+			
+			if( ! is_array( $meta_array ) ) {
+				$meta_array 	= array();
+			}
 		  
 		  	$increment = 0;
 

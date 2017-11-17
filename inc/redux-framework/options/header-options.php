@@ -16,6 +16,13 @@ $header_options 	= apply_filters( 'electro_header_options_args', array(
 		),
 
 		array(
+			'id'        => 'header_top_bar_show_mobile',
+			'title'     => esc_html__( 'Show Top Bar in Mobile', 'electro' ),
+			'type'      => 'switch',
+			'default'   => 0,
+		),
+
+		array(
 			'title'		=> esc_html__( 'Your Logo', 'electro' ),
 			'subtitle'	=> esc_html__( 'Upload your header logo image.', 'electro' ),
 			'id'		=> 'site_header_logo',

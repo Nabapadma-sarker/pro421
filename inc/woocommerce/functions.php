@@ -149,6 +149,20 @@ if ( ! function_exists( 'electro_get_price_html_from_to' ) ) {
 	}
 }
 
+if( ! function_exists( 'electro_wc_format_sale_price' ) ) {
+	/**
+	 * Format a sale price for display.
+	 *
+	 * @param  string $regular_price
+	 * @param  string $sale_price
+	 * @return string
+	 */
+	function electro_wc_format_sale_price( $price, $regular_price, $sale_price ) {
+		$price = '<ins>' . ( is_numeric( $sale_price ) ? wc_price( $sale_price ) : $sale_price ) . '</ins> <del>' . ( is_numeric( $regular_price ) ? wc_price( $regular_price ) : $regular_price ) . '</del>';
+		return apply_filters( 'electro_wc_format_sale_price', $price, $regular_price, $sale_price );
+	}
+}
+
 if ( ! function_exists( 'electro_mini_cart_fragment' ) ) {
 	/**
 	 * Cart Fragments
@@ -541,10 +555,11 @@ if ( ! function_exists( 'electro_get_shop_catalog_mode' ) ) {
 if( ! function_exists( 'electro_shop_archive_jumbotron' ) ) {
 	function electro_shop_archive_jumbotron() {
 		$static_block_id = '';
+		$brands_taxonomy = electro_get_brands_taxonomy();
 
 		if( is_shop() ) {
 			$static_block_id = apply_filters( 'electro_shop_jumbotron_id', '' );
-		} else if ( is_product_category() ) {
+		} else if ( is_product_category() || is_tax( $brands_taxonomy ) ) {
 			$term 				= get_term_by( 'slug', get_query_var('term'), get_query_var('taxonomy') );
 			$term_id 			= $term->term_id;
 			$static_block_id 	= get_woocommerce_term_meta( $term_id, 'static_block_id', true );
@@ -565,32 +580,54 @@ if( ! function_exists( 'electro_products_live_search' ) ) {
 	function electro_products_live_search() {
 		if ( isset( $_REQUEST['fn'] ) && 'get_ajax_search' == $_REQUEST['fn'] ) {
 
-			$query_args = apply_filters( 'electro_live_search_query_args', array(
-				'posts_per_page' 	=> 10,
-				'no_found_rows' 	=> true,
-				'post_type'			=> 'product',
-				'post_status'		=> 'publish',
-				'meta_query'		=> array(
-					array(
-						'key' => '_visibility',
-						'value' => array( 'search', 'visible' ),
-						'compare' => 'IN'
-					)
-				)
-			) );
-
 			if( isset( $_REQUEST['terms'] ) ) {
-				$query_args['s'] = $_REQUEST['terms'];
+				$term = $_REQUEST['terms'];
 			}
 
-			$search_query = new WP_Query( $query_args );
+			if ( empty( $term ) ) {
+				echo json_encode( array() );
+				die();
+			}
 
-			$results = array( );
-			if ( $search_query->get_posts() ) {
-			    foreach ( $search_query->get_posts() as $the_post ) {
-					$title = get_the_title( $the_post->ID );
-			        if ( has_post_thumbnail( $the_post->ID ) ) {
-						$post_thumbnail_ID = get_post_thumbnail_id( $the_post->ID );
+			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+				$query_args = apply_filters( 'electro_live_search_query_args', array(
+					'posts_per_page' 	=> 10,
+					'no_found_rows' 	=> true,
+					'post_type'			=> 'product',
+					'post_status'		=> 'publish',
+					'meta_query'		=> array(
+						array(
+							'key' => '_visibility',
+							'value' => array( 'search', 'visible' ),
+							'compare' => 'IN'
+						)
+					)
+				) );
+
+				$query_args['s'] = $term;
+				$search_query = new WP_Query( $query_args );
+				$ids          = wp_list_pluck( $search_query->posts, 'ID' );
+				$product_objects = array_map( 'wc_get_product', $ids );
+			} else {
+				$data_store = WC_Data_Store::load( 'product' );
+				$ids        = $data_store->search_products( $term, '', false );
+				if( ! empty( $ids ) ) {
+					$product_objects = wc_get_products( apply_filters( 'electro_wc_live_search_query_args', array( 'status' => array( 'publish' ), 'orderby' => 'date', 'order' => 'DESC', 'limit' => 10, 'include' => $ids ) ) );
+				}
+			}
+
+			$results = array();
+
+			if( ! empty( $product_objects ) ) {
+				foreach ( $product_objects as $product_object ) {
+					$id = electro_wc_get_product_id( $product_object );
+					$title = get_the_title( $id );
+					$title = html_entity_decode( $title , ENT_QUOTES, 'UTF-8' );
+					$price = $product_object->get_price_html();
+					$brand = '';
+
+					if ( has_post_thumbnail( $id ) ) {
+						$post_thumbnail_ID = get_post_thumbnail_id( $id );
 						$post_thumbnail_src = wp_get_attachment_image_src( $post_thumbnail_ID, 'thumbnail' );
 					} else{
 						$dimensions = wc_get_image_size( 'thumbnail' );
@@ -601,15 +638,10 @@ if( ! function_exists( 'electro_products_live_search' ) ) {
 						);
 					}
 
-					$product = new WC_Product( $the_post->ID );
-					$price = $product->get_price_html();
-					$brand = '';
-					$title = html_entity_decode( $title , ENT_QUOTES, 'UTF-8' );
-
 					$brand_taxonomy = electro_get_brands_taxonomy();
 					if( ! empty( $brand_taxonomy ) ) {
-					    $terms = wc_get_product_terms( $the_post->ID, $brand_taxonomy, array( 'fields' => 'names' ) );
-					    if ( $terms && ! is_wp_error( $terms ) ) {
+						$terms = wc_get_product_terms( $id, $brand_taxonomy, array( 'fields' => 'names' ) );
+						if ( $terms && ! is_wp_error( $terms ) ) {
 							$brand_links = array();
 							foreach ( $terms as $term ) {
 								if( isset($term->name) ) {
@@ -622,19 +654,123 @@ if( ! function_exists( 'electro_products_live_search' ) ) {
 
 					$results[] = apply_filters( 'electro_live_search_results_args', array(
 						'value' 	=> $title,
-						'url' 		=> get_permalink( $the_post->ID ),
+						'url' 		=> get_permalink( $id ),
 						'tokens' 	=> explode( ' ', $title ),
 						'image' 	=> $post_thumbnail_src[0],
 						'price'		=> $price,
 						'brand'		=> $brand,
-						'id'		=> $the_post->ID
-					), $the_post, $product );
-			    }
+						'id'		=> $id
+					), $product_object );
+				}
 			}
 
 			wp_reset_postdata();
 			echo json_encode( $results );
 		}
 		die();
+	}
+}
+
+if( ! function_exists( 'electro_wc_get_product_id' ) ) {
+	function electro_wc_get_product_id( $product ) {
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			return isset( $product->id ) ? $product->id : 0;
+		}
+
+		return $product->get_id();
+	}
+}
+
+if( ! function_exists( 'electro_wc_get_product_type' ) ) {
+	function electro_wc_get_product_type( $product ) {
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			return isset( $product->product_type ) ? $product->product_type : 'simple';
+		}
+
+		return $product->get_type();
+	}
+}
+
+if ( ! function_exists( 'woocommerce_products_will_display' ) ) {
+
+	/**
+	 * Check if we will be showing products or not (and not sub-categories only).
+	 * @subpackage	Loop
+	 * @return bool
+	 */
+	function woocommerce_products_will_display() {
+		global $wpdb;
+
+		if ( is_shop() ) {
+			return 'subcategories' !== get_option( 'woocommerce_shop_page_display' ) || is_search();
+		}
+
+		if ( ! is_product_taxonomy() ) {
+			return false;
+		}
+
+		if ( is_search() || is_filtered() || is_paged() ) {
+			return true;
+		}
+
+		$term = get_queried_object();
+
+		if ( is_product_category() ) {
+			switch ( get_woocommerce_term_meta( $term->term_id, 'display_type', true ) ) {
+				case 'subcategories' :
+					// Nothing - we want to continue to see if there are products/subcats
+				break;
+				case 'products' :
+				case 'both' :
+					return true;
+				break;
+				default :
+					// Default - no setting
+					if ( get_option( 'woocommerce_category_archive_display' ) != 'subcategories' ) {
+						return true;
+					}
+				break;
+			}
+		}
+
+		// Begin subcategory logic
+		if ( empty( $term->term_id ) || empty( $term->taxonomy ) ) {
+			return true;
+		}
+
+		if ( is_tax( 'product_brand' ) ) {
+			return true;
+		}
+
+
+		$transient_name = 'wc_products_will_display_' . $term->term_id . '_' . WC_Cache_Helper::get_transient_version( 'product_query' );
+
+		if ( false === ( $products_will_display = get_transient( $transient_name ) ) ) {
+
+			$has_children = $wpdb->get_col( $wpdb->prepare( "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE parent = %d AND taxonomy = %s", $term->term_id, $term->taxonomy ) );
+
+			if ( $has_children ) {
+				// Check terms have products inside - parents first. If products are found inside, subcats will be shown instead of products so we can return false.
+				if ( sizeof( get_objects_in_term( $has_children, $term->taxonomy ) ) > 0 ) {
+					$products_will_display = false;
+				} else {
+					// If we get here, the parents were empty so we're forced to check children
+					foreach ( $has_children as $term_id ) {
+						$children = get_term_children( $term_id, $term->taxonomy );
+
+						if ( sizeof( get_objects_in_term( $children, $term->taxonomy ) ) > 0 ) {
+							$products_will_display = false;
+							break;
+						}
+					}
+				}
+			} else {
+				$products_will_display = true;
+			}
+		}
+
+		set_transient( $transient_name, $products_will_display, DAY_IN_SECONDS * 30 );
+
+		return $products_will_display;
 	}
 }

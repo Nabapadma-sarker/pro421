@@ -114,6 +114,9 @@ if ( ! function_exists( 'electro_declare_theme_support' ) ) {
 
 		// Declare WooCommerce support
 		add_theme_support( 'woocommerce' );
+		add_theme_support( 'wc-product-gallery-zoom' );
+		add_theme_support( 'wc-product-gallery-lightbox' );
+		add_theme_support( 'wc-product-gallery-slider' );
 
 		// Declare support for title theme feature
 		add_theme_support( 'title-tag' );
@@ -324,7 +327,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'Contact Form 7',
 				'slug'					=> 'contact-form-7',
 				'required'				=> false,
-				'version'				=> '4.6',
+				'version'				=> '4.9.1',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -346,7 +349,17 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'slug'					=> 'electro-extensions',
 				'source'				=> get_template_directory() . '/assets/plugins/electro-extensions.zip',
 				'required'				=> false,
-				'version'				=> '1.2.11',
+				'version'				=> '1.4.7',
+				'force_activation'		=> false,
+				'force_deactivation'	=> false,
+				'external_url'			=> '',
+			),
+
+			array(
+				'name'					=> 'One Click Demo Import',
+				'slug'					=> 'one-click-demo-import',
+				'required'				=> false,
+				'version'				=> '2.4.0',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -356,7 +369,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'Redux Framework',
 				'slug'					=> 'redux-framework',
 				'required'				=> true,
-				'version'				=> '3.6.3',
+				'version'				=> '3.6.7.7',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -366,7 +379,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'Regenerate Thumbnails',
 				'slug'					=> 'regenerate-thumbnails',
 				'required'				=> false,
-				'version'				=> '2.2.6',
+				'version'				=> '2.3.1',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -377,7 +390,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'slug'					=> 'revslider',
 				'source'				=> get_template_directory() . '/assets/plugins/revslider.zip',
 				'required'				=> false,
-				'version'				=> '5.3.1.5',
+				'version'				=> '5.4.6.2',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -387,7 +400,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'WooCommerce',
 				'slug'					=> 'woocommerce',
 				'required'				=> false,
-				'version'				=> '2.6.13',
+				'version'				=> '3.2.3',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -398,7 +411,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'slug'					=> 'js_composer',
 				'source'				=> get_template_directory() . '/assets/plugins/js_composer.zip',
 				'required'				=> false,
-				'version'				=> '5.0.1',
+				'version'				=> '5.4.2',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -408,7 +421,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'YITH Woocommerce Compare',
 				'slug'					=> 'yith-woocommerce-compare',
 				'required'				=> false,
-				'version'				=> '2.1.0',
+				'version'				=> '2.2.2',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',
@@ -418,7 +431,7 @@ if ( ! function_exists( 'electro_register_required_plugins' ) ) {
 				'name'					=> 'YITH WooCommerce Wishlist',
 				'slug'					=> 'yith-woocommerce-wishlist',
 				'required'				=> false,
-				'version'				=> '2.0.16',
+				'version'				=> '2.1.2',
 				'force_activation'		=> false,
 				'force_deactivation'	=> false,
 				'external_url'			=> '',

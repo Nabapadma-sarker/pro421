@@ -141,6 +141,17 @@
 			min-width: 0;
 		}
 	}
+
+	.animate-dropdown,
+	&.animate-dropdown {
+	    .open > .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+			-webkit-animation: none;
+			-moz-animation: none;
+			-o-animation: none;
+			-ms-animation: none;
+			animation: none;
+	    }
+	}
 }
 
 .vertical-menu {

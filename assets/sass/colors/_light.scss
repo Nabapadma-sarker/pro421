@@ -3,6 +3,8 @@
 .header-v3 .navbar-search .input-group .btn,
 .header-v3 .navbar-search .input-group .hero-action-btn,
 .navbar-mini-cart .cart-items-count,
+.navbar-compare .count,
+.navbar-wishlist .count,
 .navbar-primary a[data-toggle=dropdown]::after,
 .navbar-primary .navbar-nav .nav-link,
 .vertical-menu>li.list-group-item>a,
@@ -40,7 +42,8 @@ p.no-comments a,
 p.no-comments button,
 .navbar-primary .navbar-nav > .menu-item >a,
 .navbar-primary .navbar-nav > .menu-item >a:hover,
-.navbar-primary .navbar-nav > .menu-item >a:focus {
+.navbar-primary .navbar-nav > .menu-item >a:focus,
+.demo_store {
     color: $primary-text-color;
 }
 

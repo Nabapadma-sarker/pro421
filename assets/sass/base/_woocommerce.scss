@@ -134,14 +134,17 @@ dl.variation {
 	}
 }
 
+p.in-stock,
 .in-stock span {
 	color: $brand-success;
 }
 
+p.out-of-stock,
 .out-of-stock span {
 	color: $brand-danger;
 }
 
+p.available-on-backorder,
 .available-on-backorder span {
 	color: $brand-warning;
 }

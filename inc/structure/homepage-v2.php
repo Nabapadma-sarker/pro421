@@ -121,7 +121,13 @@ function electro_get_home_v2_meta( $merge_default = true ) {
 	global $post;
 
 	if ( isset( $post->ID ) ) {
-		$home_v2_options = json_decode( get_post_meta( $post->ID, '_home_v2_options', true ), true );
+		
+		$clean_home_v2_options = get_post_meta( $post->ID, '_home_v2_options', true );
+		$home_v2_options = maybe_unserialize( $clean_home_v2_options );
+
+		if( ! is_array( $home_v2_options ) ) {
+			$home_v2_options = json_decode( $clean_home_v2_options, true );
+		}
 	
 		if ( $merge_default ) {
 			$default_options = electro_get_default_home_v2_options();

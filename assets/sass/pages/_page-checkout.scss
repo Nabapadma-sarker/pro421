@@ -50,6 +50,7 @@
 				margin: 1.387em -1.387em -1.387em -1.387em;
 				background: rgba(0,0,0,0.035);
 				border-top: 1px dotted #ddd;
+				@include clearfix;
 
 				fieldset {
 					border: 0;
@@ -60,6 +61,7 @@
 					label {
 						width: auto;
 						margin-#{$start}: 0;
+						margin-bottom: .857em;
 					}
 
 					.form-row {
@@ -84,12 +86,10 @@
 						width: 75%;
 						float: $end;
 					}
-				}
 
-				.wc-credit-card-form-card-number,
-				.wc-credit-card-form-card-expiry,
-				.wc-credit-card-form-card-cvc {
-					font-size: 1.387em;
+					.input-text, input[type=email], input[type=password], input[type=search], input[type=text], input[type=url], textarea {
+						background-color: #fff;
+					}
 				}
 
 				.wc-credit-card-form-card-number {
@@ -141,14 +141,20 @@
 		margin-bottom: 0;
 		margin-bottom: 1em;
 
-		label {
+		.woocommerce-form__label-for-checkbox,
+		input + label {
 			display: inline-block;
+		}
+
+		input + label,
+		.woocommerce-form__input-checkbox + span {
 			margin-#{$start}: .618em;
 		}
 
 		input {
 			display: inline-block;
 			width: auto;
+			position: relative;
 			float: $start;
 			margin: .327em .53em 0 0;
 		}
@@ -259,6 +265,29 @@ form.woocommerce-checkout {
 			width: 100%;
 			padding: 0;
 		}
+
+		.woocommerce-billing-fields__field-wrapper,
+		.woocommerce-account-fields {
+			&::after,
+			&::before {
+				content: "";
+			    display: table;
+			    clear: both;
+			}
+		}
+
+		.woocommerce-account-fields {
+			.create-account .checkbox {
+				margin-left: 0;
+			}
+
+			.checkbox input[type=checkbox] {
+				position: relative;
+			    margin-top: 0;
+			    margin-left: 0;
+				margin-right: 4px;
+			}
+		}
 	}
 
 	#order_review_heading {
@@ -274,7 +303,7 @@ form.woocommerce-checkout {
 		border-radius: 10px;
 
 		@include media-breakpoint-up(lg) {
-			width: calc( 41.6666666667% - 30px );	
+			width: calc( 41.6666666667% - 30px );
 			margin-left: 15px;
 		}
 	}
@@ -299,7 +328,7 @@ form.woocommerce-checkout {
 	.sticky-wrapper {
 		.order-review-wrapper.stuck {
 			top: 52px;
-		}	
+		}
 	}
 }
 
@@ -307,7 +336,7 @@ form.woocommerce-checkout {
 	.sticky-wrapper {
 		.order-review-wrapper.stuck {
 			top: 91px;
-		}	
+		}
 	}
 }
 
@@ -315,6 +344,6 @@ form.woocommerce-checkout {
 	.sticky-wrapper {
 		.order-review-wrapper.stuck {
 			top: 123px;
-		}	
+		}
 	}
 }

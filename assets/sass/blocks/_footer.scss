@@ -427,7 +427,8 @@
 }
 
 .electro-handheld-footer-bar {
-	.site-search .widget_product_search form:before {
+	.site-search .widget_product_search form:before,
+	.site-search .widget_search form:before, {
 		top: 2.586em;
 		left: 2.586em;
 		@include fa-icon;
@@ -436,7 +437,8 @@
 	    position: absolute;
 	}
 
-	.widget_product_search form input[type=submit], .widget_search form input[type=submit] {
+	.widget_product_search form input[type=submit],
+	.widget_search form input[type=submit] {
 		clip: rect(1px 1px 1px 1px);
 		clip: rect(1px,1px,1px,1px);
 		position: absolute!important;
@@ -444,7 +446,10 @@
 		left: 0;
 	}
 
-	.site-search .widget_product_search input[type=search], .site-search .widget_product_search input[type=text] {
+	.site-search .widget_product_search input[type=search],
+	.site-search .widget_product_search input[type=text],
+	.site-search .widget_search input[type=search],
+	.site-search .widget_search input[type=text] {
 		padding: 1.41575em 1.618em 1.41575em 3.706325903em;
     	line-height: 1;
     	width: 100%;

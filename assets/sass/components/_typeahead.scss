@@ -6,6 +6,7 @@
 .twitter-typeahead {
     z-index: 1051;
     width: 100%;
+    display: table-cell !important;
 }
 
 .tt-hint {

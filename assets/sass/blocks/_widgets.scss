@@ -131,8 +131,10 @@
 	}
 }
 
-.widget_search {
-	form.search-form {
+.widget_search,
+.sidebar .widget_product_search {
+	form.search-form,
+	.woocommerce-product-search {
 		label {
 			display: block;
 		}
@@ -146,7 +148,9 @@
 		    color: #818181;
 		}
 	}
-	.search-submit {
+
+	.search-submit,
+	input[type=submit] {
 		display: none;
 	}
 }

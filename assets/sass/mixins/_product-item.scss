@@ -7,18 +7,14 @@
 @mixin make-action-buttons-float() {
 	.hover-area {
 		.action-buttons {
-			@include clearfix;
-
 			> div:first-child,
 			> a:first-child {
-				float: $start;
 				margin: 0;
 				font-size: 12px;
 			}
 
 			> div:last-child,
 			> a:last-child {
-				float: $end;
 				margin: 0;
 				font-size: 12px;
 			}

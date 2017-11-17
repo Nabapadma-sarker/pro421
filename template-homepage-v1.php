@@ -16,19 +16,23 @@ remove_action( 'electro_content_top', 'electro_breadcrumb', 10 );
 
 do_action( 'electro_before_homepage_v1' );
 
-get_header( 'v1' ); ?>
+$home_v1 		= electro_get_home_v1_meta();
+$header_style 	= isset( $home_v1['hpc']['header_style'] ) ? $home_v1['hpc']['header_style'] : 'v1';
+get_header( $header_style ); ?>
 
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main">
 
 			<?php
 			/**
-			 * @hooked electro_homepage_content - 10
-			 * @hooked electro_product_categories - 20
-			 * @hooked electro_recent_products - 30
-			 * @hooked electro_featured_products - 40
-			 * @hooked electro_popular_products - 50
-			 * @hooked electro_on_sale_products - 60
+             * @hooked electro_page_template_content - 5
+             * @hooked electro_home_v1_slider - 10
+             * @hooked electro_home_v1_ads_block - 20
+             * @hooked electro_home_v1_deal_and_tabs_block - 30
+             * @hooked electro_home_v1_2_1_2_block - 40
+             * @hooked electro_home_v1_product_cards_carousel - 50
+             * @hooked electro_home_v1_ad_banner - 60
+             * @hooked electro_home_v1_products_carousel - 70
 			 */
 			do_action( 'homepage_v1' ); ?>
 

@@ -100,6 +100,10 @@ class Electro_Admin_Meta_Boxes {
 			return;
 		}
 
+		if ( $post->ID == get_option( 'page_for_posts' ) && empty( $post->post_content ) ) {
+			return;
+		}
+
 		$template_file = get_post_meta( $post->ID, '_wp_page_template', true );
 
 		switch( $template_file ) {

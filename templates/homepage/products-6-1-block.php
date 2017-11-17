@@ -47,17 +47,25 @@ if ( ! empty( $animation ) ) {
 						if ( $products_count == 6 ) {
 							echo '</ul>';
 							echo '<ul class="products exclude-auto-height product-main-6-1">';
-							add_action( 'woocommerce_after_shop_loop_item', 'woocommerce_show_product_thumbnails', 5 );
-							remove_action( 'woocommerce_after_shop_loop_item_title',	'electro_template_loop_product_thumbnail', 		5  );
-							add_action( 'woocommerce_after_shop_loop_item_title', 	 	'electro_template_loop_product_single_image', 	5  );
+							remove_action( 'woocommerce_after_shop_loop_item_title',	'electro_template_loop_product_thumbnail', 		5 );
+							if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+								add_action( 'woocommerce_after_shop_loop_item', 			'woocommerce_show_product_thumbnails',			5 );
+								add_action( 'woocommerce_after_shop_loop_item_title', 	 	'electro_template_loop_product_single_image', 	5 );
+							} else {
+								add_action( 'woocommerce_after_shop_loop_item', 			'electro_show_product_images',			5 );
+							}
 						}
 						
 						wc_get_template_part( 'content', 'product' );
 
 						if ( $products_count == 6 ) {
-							remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_show_product_thumbnails', 5 );
-							remove_action( 'woocommerce_after_shop_loop_item_title', 	'electro_template_loop_product_single_image', 	5  );
-							add_action( 'woocommerce_after_shop_loop_item_title',		'electro_template_loop_product_thumbnail', 		5  );
+							if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+								remove_action( 'woocommerce_after_shop_loop_item_title', 	'electro_template_loop_product_single_image', 	5 );
+								remove_action( 'woocommerce_after_shop_loop_item', 			'woocommerce_show_product_thumbnails',			5 );
+							} else {
+								remove_action( 'woocommerce_after_shop_loop_item', 			'electro_show_product_images',			5 );
+							}
+							add_action( 'woocommerce_after_shop_loop_item_title',		'electro_template_loop_product_thumbnail', 		5 );
 						}
 
 						$products_count++;

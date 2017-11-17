@@ -5,9 +5,10 @@
  * @package electro
  */
 
-electro_get_header();
+electro_get_header(); ?>
 
-	do_action( 'electro_before_main_content' ); ?>
+<div id="primary" class="content-area">
+	<main id="main" class="site-main">
 		<div class="row">
 			<div class="col-sm-12 center-block">
 				<div class="info-404">
@@ -45,8 +46,8 @@ electro_get_header();
 					</div>
 				</div>
 			</div>
-		</div><?php	
+		</div>
+	</main><!-- #main -->
+</div><!-- #primary -->
 
-	do_action( 'electro_after_main_content' );
-
-get_footer();
+<?php get_footer();

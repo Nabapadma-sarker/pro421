@@ -72,7 +72,7 @@ if ( ! class_exists( 'Electro_WPML' ) ) :
 
                 $preview .= '<li class="menu-item menu-item-has-children dropdown wcml_currency_switcher">';
 
-                $sub_menu = '';
+                $submenu = '';
 
 	            foreach ( $currencies as $currency ) {
 	                $currency_format = preg_replace( array('#%name%#', '#%symbol%#', '#%code%#'),
@@ -257,7 +257,9 @@ if ( ! class_exists( 'Electro_WPML' ) ) :
 				<div class="container">
 					<ul class="nav nav-inline animate-dropdown">
 						<?php echo $this->get_menu_ls_html( array() ); ?>
-						<?php echo $this->get_menu_cs_html( array() ); ?>
+						<?php if ( apply_filters( 'electro_currency_switcher_enable', false ) && class_exists( 'WCML_Currency_Switcher' ) && isset( $woocommerce_wpml->multi_currency ) ) {
+							echo $this->get_menu_cs_html( array() );
+						} ?>
 					</ul>
 				</div>
 			</div>

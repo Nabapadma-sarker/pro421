@@ -329,40 +329,6 @@
 	 	}
 	 }
 
-	/*........Home Page 2........*/
-	.columns-3 {
-		.products {
-			.product-card {
-				.hover-area {
-					.action-buttons {
-						> div:first-child,
-						> a:first-child,
-						> div:last-child,
-						> a:last-child {
-							float: none;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// .products {
-	// 	.product.product-card {
-	// 		.media-body {
-	// 			.hover-area {
-	// 				.action-buttons {
-	// 					> div ,
-	// 					> a{
-	// 						margin-#{$end}: 0;
-	// 						margin-#{$start}: 0;
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	.page-template-template-homepage-v2 {
 		#sidebar {
 			margin-top: 5.714em !important;

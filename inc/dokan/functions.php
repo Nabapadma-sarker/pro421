@@ -126,3 +126,45 @@ if( ! function_exists( 'electro_dokan_body_classes' ) ) {
 		return $classes;
 	}
 }
+
+if ( ! function_exists( 'electro_dokan_product_edit_add_specifications' ) ) {
+	function electro_dokan_product_edit_add_specifications( $post, $post_id ) {
+		?>
+		<div class="dokan-product-specifications dokan-edit-row">
+			<div class="dokan-section-heading" data-togglehandler="dokan_product_specifications">
+				<h2><i class="fa fa-cog" aria-hidden="true"></i> <?php _e( 'Specifications', 'electro' ); ?></h2>
+				<p><?php _e( 'Manage specifications for this product.', 'electro' ); ?></p>
+				<a href="#" class="dokan-section-toggle">
+					<i class="fa fa-sort-desc fa-flip-vertical" aria-hidden="true"></i>
+				</a>
+				<div class="dokan-clearfix"></div>
+			</div>
+
+			<div class="dokan-section-content">
+
+				<?php
+					$display_attributes = get_post_meta( $post_id, '_specifications_display_attributes', true );
+					$specifications = get_post_meta( $post_id, '_specifications', true );
+				?>
+
+				<div class="content-half-part dokan-form-group">
+					<label class="" for="_specifications_display_attributes">
+						<input name="_specifications_display_attributes" id="_specifications_display_attributes" value="yes" type="checkbox" <?php checked( $display_attributes, 'yes' ); ?>>
+						<?php esc_html_e( 'Display Attributes', 'electro' ) ?>
+					</label>
+				</div>
+
+				<div class="content-half-part dokan-form-group">
+					<label for="_specifications_attributes_title" class="form-label"><?php esc_html_e( 'Attributes Title', 'electro' ); ?></label>
+					<?php dokan_post_input_box( $post_id, '_specifications_attributes_title' ); ?>
+				</div>
+
+				<div class="dokan-clearfix"></div>
+
+				<?php wp_editor( htmlspecialchars_decode( $specifications ) , '_specifications', array('editor_height' => 50, 'quicktags' => false, 'media_buttons' => false, 'teeny' => true, 'editor_class' => 'post_content') ); ?>
+
+			</div><!-- .dokan-side-right -->
+		</div><!-- .dokan-product-specifications -->
+		<?php
+	}
+}

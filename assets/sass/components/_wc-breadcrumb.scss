@@ -33,7 +33,10 @@
 	}
 }
 
-.home.blog #content, .home.page .entry-header {
+.home.blog #content, 
+.home.page .entry-header,
+.no-breadcrumb #content,
+.page.no-breadcrumb .entry-header {
 	margin-top: 3.571em;
 }
 

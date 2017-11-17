@@ -116,7 +116,7 @@ if ( ! function_exists( 'electro_products_carousel' ) ) {
 
 				<?php endif; ?>
 
-				<div id="<?php echo esc_attr( $carousel_id );?>">
+				<div id="<?php echo esc_attr( $carousel_id );?>" data-ride="owl-carousel" data-replace-active-class="true" data-carousel-selector=".products-carousel" data-carousel-options="<?php echo esc_attr( json_encode( $carousel_args ) ); ?>">
 				<?php
 					$search 		= array( '<ul', '<li', '</li>', '</ul>', 'class="products' );
 					$replace 		= array( '<div', '<div', '</div>', '</div>', 'class="products owl-carousel products-carousel' );
@@ -124,20 +124,6 @@ if ( ! function_exists( 'electro_products_carousel' ) ) {
 					echo apply_filters( 'electro_products_carousel_html', $products_html );
 				?>
 				</div>
-
-				<script type="text/javascript">
-					jQuery(document).ready(function($){
-						var $products_carousel = $( '#<?php echo esc_attr( $carousel_id ); ?> .owl-carousel')
-						$products_carousel.on( 'initialized.owl.carousel translated.owl.carousel', function() {
-							var $this = $(this);
-							$this.find( '.owl-item.last-active' ).each( function() {
-								$(this).removeClass( 'last-active' );
-							});
-							$(this).find( '.owl-item.active' ).last().addClass( 'last-active' );
-						});
-						$products_carousel.owlCarousel(<?php echo json_encode( $carousel_args ); ?>);
-					});
-				</script>
 			</section>
 		<?php
 
@@ -260,7 +246,9 @@ if ( ! function_exists( 'electro_onsale_product' ) ) {
 						$args['order'] 		= 'DESC';
 					break;
 					case 'specific':
-						$args['post__in'] 	= $args['product_id'];
+						$args['orderby'] 	= 'post__in';
+						$args['ids'] 		= $args['product_id'];
+						$args['post__in'] 	= array_map( 'trim', explode( ',', $args['product_id'] ) );
 					break;
 				}
 			}
@@ -373,7 +361,8 @@ if ( ! function_exists( 'electro_onsale_product_carousel' ) ) {
 					break;
 					case 'specific':
 						$args['orderby'] 	= 'post__in';
-						$args['post__in'] 	= explode( ',', $section_args['product_ids'] );
+						$args['ids'] 		= $section_args['product_ids'];
+						$args['post__in'] 	= array_map( 'trim', explode( ',', $section_args['product_ids'] ) );
 					break;
 				}
 			}
@@ -562,6 +551,26 @@ if ( ! function_exists( 'electro_products_6_1_block' ) ) {
 			}
 
 			$categories = get_terms( 'product_cat',  $cat_args );
+
+			// Load Single Product Gallery Scripts
+			$assets_path = str_replace( array( 'http:', 'https:' ), '', WC()->plugin_url() ) . '/assets/';
+			$suffix      = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+				$lightbox_en = 'yes' === get_option( 'woocommerce_enable_lightbox' );
+				if( $lightbox_en ) {				
+					wp_enqueue_script( 'prettyPhoto', $assets_path . 'js/prettyPhoto/jquery.prettyPhoto' . $suffix . '.js', array( 'jquery' ), '3.1.5', true );
+					wp_enqueue_style( 'woocommerce_prettyPhoto_css', $assets_path . 'css/prettyPhoto.css' );
+				}
+			} else {
+				wp_enqueue_script( 'zoom', $assets_path . 'js/zoom/jquery.zoom' . $suffix . '.js', array( 'jquery' ), '1.7.15', true );
+				wp_enqueue_script( 'flexslider', $assets_path . 'js/flexslider/jquery.flexslider' . $suffix . '.js', array( 'jquery' ), '2.6.1', true );
+				wp_enqueue_script( 'photoswipe', $assets_path . 'js/photoswipe/photoswipe' . $suffix . '.js', array( 'jquery' ), '4.1.1', true );
+				wp_enqueue_script( 'photoswipe-ui-default', $assets_path . 'js/photoswipe/photoswipe-ui-default' . $suffix . '.js', array( 'jquery' ), '4.1.1', true );
+				wp_enqueue_script( 'wc-single-product', $assets_path . 'js/frontend/single-product' . $suffix . '.js', array( 'jquery' ), WC_VERSION, true );
+				wp_enqueue_style( 'photoswipe', $assets_path . 'css/photoswipe/photoswipe.css' );
+				wp_enqueue_style( 'photoswipe-default-skin', $assets_path . 'css/photoswipe/default-skin/default-skin.css' );
+			}
+
 			electro_get_template( 'homepage/products-6-1-block.php', array( 'categories' => $categories, 'products' => $args['products'], 'section_title' => $args['section_title'], 'section_class' => $args['section_class'], 'animation' => $args['animation'] ) );
 		}
 	}
@@ -596,6 +605,12 @@ if ( ! function_exists( 'electro_features_list' ) ) {
 	 *
 	 */
 	function electro_features_list( $features = array(), $columns = 0 ) {
+
+		foreach( $features as $key => $feature ) {
+			if ( empty( $feature['text'] ) && empty( $feature['icon'] ) ) {
+				unset( $features[ $key ] );
+			}
+		}
 
 		if ( 0 === $columns ) {
 			$columns = count( $features );
@@ -785,17 +800,9 @@ if ( ! function_exists( 'electro_product_cards_carousel' ) ) {
 
 				<?php endif; ?>
 
-				<div id="<?php echo esc_attr( $carousel_id );?>">
-
+				<div id="<?php echo esc_attr( $carousel_id );?>" data-ride="owl-carousel" data-carousel-selector=".product-cards-carousel" data-carousel-options="<?php echo esc_attr( json_encode( $carousel_args ) );?>">
 					<?php echo $products_card_html; ?>
-
 				</div>
-
-				<script type="text/javascript">
-					jQuery(document).ready( function($){
-						$( '#<?php echo esc_attr( $carousel_id ); ?> .owl-carousel' ).owlCarousel( <?php echo json_encode( $carousel_args );?> );
-					} );
-				</script>
 
 			</section><?php
 		}
@@ -862,7 +869,12 @@ if( ! function_exists( 'electro_home_v1_hook_control' ) ) {
 			remove_all_actions( 'homepage_v1' );
 
 			$home_v1 = electro_get_home_v1_meta();
-			add_action( 'homepage_v1',	'electro_page_template_content',			5 );
+			
+			$is_enabled = isset( $home_v1['hpc']['is_enabled'] ) ? $home_v1['hpc']['is_enabled'] : 'no';
+			if ( $is_enabled !== 'no' ) {
+				add_action( 'homepage_v1',	'electro_page_template_content',			isset( $home_v1['hpc']['priority'] ) ? intval( $home_v1['hpc']['priority'] ) : 5 );
+			}
+			
 			add_action( 'homepage_v1',	'electro_home_v1_slider',					isset( $home_v1['sdr']['priority'] ) ? intval( $home_v1['sdr']['priority'] ) : 10 );
 			add_action( 'homepage_v1',	'electro_home_v1_ads_block',				isset( $home_v1['ad']['priority'] ) ? intval( $home_v1['ad']['priority'] ) : 20 );
 			add_action( 'homepage_v1',	'electro_home_v1_deal_and_tabs_block',		isset( $home_v1['dtd']['priority'] ) ? intval( $home_v1['dtd']['priority'] ) : 30 );
@@ -880,7 +892,12 @@ if( ! function_exists( 'electro_home_v2_hook_control' ) ) {
 			remove_all_actions( 'homepage_v2' );
 
 			$home_v2 = electro_get_home_v2_meta();
-			add_action( 'homepage_v2',	'electro_page_template_content',			5 );
+
+			$is_enabled = isset( $home_v2['hpc']['is_enabled'] ) ? $home_v2['hpc']['is_enabled'] : 'no';
+			if ( $is_enabled !== 'no' ) {
+				add_action( 'homepage_v2',	'electro_page_template_content',			isset( $home_v2['hpc']['priority'] ) ? intval( $home_v2['hpc']['priority'] ) : 5 );
+			}
+
 			add_action( 'homepage_v2',	'electro_home_v2_slider',					isset( $home_v2['sdr']['priority'] ) ? intval( $home_v2['sdr']['priority'] ) : 10 );
 			add_action( 'homepage_v2',	'electro_home_v2_ads_block',				isset( $home_v2['ad']['priority'] ) ? intval( $home_v2['ad']['priority'] ) : 20 );
 			add_action( 'homepage_v2',	'electro_home_v2_products_carousel_tabs',	isset( $home_v2['pct']['priority'] ) ? intval( $home_v2['pct']['priority'] ) : 30 );
@@ -898,7 +915,12 @@ if( ! function_exists( 'electro_home_v3_hook_control' ) ) {
 			remove_all_actions( 'homepage_v3' );
 
 			$home_v3 = electro_get_home_v3_meta();
-			add_action( 'homepage_v3',	'electro_page_template_content',			5 );
+
+			$is_enabled = isset( $home_v3['hpc']['is_enabled'] ) ? $home_v3['hpc']['is_enabled'] : 'no';
+			if ( $is_enabled !== 'no' ) {
+				add_action( 'homepage_v3',	'electro_page_template_content',			isset( $home_v3['hpc']['priority'] ) ? intval( $home_v3['hpc']['priority'] ) : 5 );
+			}
+			
 			add_action( 'homepage_v3',	'electro_home_v3_slider',					isset( $home_v3['sdr']['priority'] ) ? intval( $home_v3['sdr']['priority'] ) : 10 );
 			add_action( 'homepage_v3',	'electro_home_v3_features_list',			isset( $home_v3['fl']['priority'] ) ? intval( $home_v3['fl']['priority'] ) : 20 );
 			add_action( 'homepage_v3',	'electro_home_v3_ads_block',				isset( $home_v3['ad']['priority'] ) ? intval( $home_v3['ad']['priority'] ) : 30 );

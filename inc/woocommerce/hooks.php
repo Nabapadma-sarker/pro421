@@ -274,9 +274,16 @@ add_filter( 'woocommerce_breadcrumb_defaults', 				'electro_change_breadcrumb_de
 add_filter( 'loop_shop_columns',							'electro_set_loop_shop_columns', 				10 );
 add_filter( 'loop_shop_per_page', 							'electro_set_loop_shop_per_page', 				20 );
 add_filter( 'woocommerce_pagination_args',					'electro_set_pagination_args',					10 );
-add_filter( 'woocommerce_get_price_html_from_to',			'electro_get_price_html_from_to',				10, 4 );
 add_filter( 'woocommerce_get_price_html',					'electro_wrap_price_html',						90 );
 add_filter( 'woocommerce_add_to_cart_fragments',			'electro_mini_cart_fragment' );
+add_filter( 'woocommerce_single_product_carousel_options',	'electro_wc_single_product_carousel_option_remove_thumb' );
+add_filter( 'woocommerce_single_product_image_gallery_classes',	'electro_single_product_image_gallery_classes' );
+
+if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+	add_filter( 'woocommerce_get_price_html_from_to',			'electro_get_price_html_from_to',				10, 4 );
+} else {
+	add_filter( 'woocommerce_format_sale_price',			'electro_wc_format_sale_price',				10, 3 );
+}
 
 /**
  * Structured Data

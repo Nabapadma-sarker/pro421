@@ -60,6 +60,7 @@ class Electro_WC_Helper {
 	public static function get_ratings_counts( $product ) {
 		global $wpdb;
 		
+		$product_id = electro_wc_get_product_id( $product );
 		$counts     = array();
 		$raw_counts = $wpdb->get_results( $wpdb->prepare("
                 SELECT meta_value, COUNT( * ) as meta_value_count FROM $wpdb->commentmeta
@@ -69,7 +70,7 @@ class Electro_WC_Helper {
                 AND comment_approved = '1'
                 AND meta_value > 0
                 GROUP BY meta_value
-            ", $product->id ) );
+            ", $product_id ) );
 		
 		foreach ( $raw_counts as $count ) {
 			$counts[ $count->meta_value ] = $count->meta_value_count;
@@ -243,17 +244,36 @@ class Electro_WC_Helper {
 			<div class="options_group">
 				<p class="form-field">
 					<label for="accessory_ids"><?php _e( 'Accessories', 'electro' ); ?></label>
-					<input type="hidden" class="wc-product-search" style="width: 50%;" id="accessory_ids" name="accessory_ids" data-placeholder="<?php esc_attr_e( 'Search for a product&hellip;', 'electro' ); ?>" data-action="woocommerce_json_search_simple_products" data-multiple="true" data-exclude="<?php echo intval( $post->ID ); ?>" data-selected="<?php
-						$product_ids = array_filter( array_map( 'absint', (array) get_post_meta( $post->ID, '_accessory_ids', true ) ) );
-						$json_ids    = array();
-						foreach ( $product_ids as $product_id ) {
-							$product = wc_get_product( $product_id );
-							if ( is_object( $product ) ) {
-								$json_ids[ $product_id ] = wp_kses_post( html_entity_decode( $product->get_formatted_name(), ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+					<?php if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) : ?>
+						<input type="hidden" class="wc-product-search" style="width: 50%;" id="accessory_ids" name="accessory_ids" data-placeholder="<?php esc_attr_e( 'Search for a product&hellip;', 'electro' ); ?>" data-action="woocommerce_json_search_simple_products" data-multiple="true" data-exclude="<?php echo intval( $post->ID ); ?>" data-selected="<?php
+							$product_ids = array_filter( array_map( 'absint', (array) get_post_meta( $post->ID, '_accessory_ids', true ) ) );
+							$json_ids    = array();
+							foreach ( $product_ids as $product_id ) {
+								$product = wc_get_product( $product_id );
+								if ( is_object( $product ) ) {
+									$json_ids[ $product_id ] = wp_kses_post( html_entity_decode( $product->get_formatted_name(), ENT_QUOTES, get_bloginfo( 'charset' ) ) );
+								}
 							}
-						}
-						echo esc_attr( json_encode( $json_ids ) );
-					?>" value="<?php echo implode( ',', array_keys( $json_ids ) ); ?>" /> <?php echo wc_help_tip( __( 'Accessories are products which you recommend to be bought along with this product.', 'electro' ) ); ?>
+							echo esc_attr( json_encode( $json_ids ) );
+						?>" value="<?php echo implode( ',', array_keys( $json_ids ) ); ?>" />
+
+					<?php else : ?>
+
+						<select class="wc-product-search" multiple="multiple" style="width: 50%;" id="accessory_ids" name="accessory_ids[]" data-placeholder="<?php esc_attr_e( 'Search for a product&hellip;', 'electro' ); ?>" data-action="woocommerce_json_search_simple_products" data-exclude="<?php echo intval( $post->ID ); ?>">
+							<?php
+								$product_ids = array_filter( array_map( 'absint', (array) get_post_meta( $post->ID, '_accessory_ids', true ) ) );
+
+								foreach ( $product_ids as $product_id ) {
+									$product = wc_get_product( $product_id );
+									if ( is_object( $product ) ) {
+										echo '<option value="' . esc_attr( $product_id ) . '"' . selected( true, true, false ) . '>' . wp_kses_post( $product->get_formatted_name() ) . '</option>';
+									}
+								}
+							?>
+						</select>
+					<?php endif; ?>
+
+					<?php echo wc_help_tip( __( 'Accessories are products which you recommend to be bought along with this product.', 'electro' ) ); ?>
 				</p>
 			</div>
 		</div>
@@ -261,12 +281,18 @@ class Electro_WC_Helper {
 	}
 
 	public static function save_product_accessories_panel_data( $post_id ) {
-		$accessories = isset( $_POST['accessory_ids'] ) ? array_filter( array_map( 'intval', explode( ',', $_POST['accessory_ids'] ) ) ) : array();
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			$accessories = isset( $_POST['accessory_ids'] ) ? array_filter( array_map( 'intval', explode( ',', $_POST['accessory_ids'] ) ) ) : array();
+		} else {
+			$accessories = isset( $_POST['accessory_ids'] ) ? array_map( 'intval', (array) $_POST['accessory_ids'] ) : array();
+		}
 		update_post_meta( $post_id, '_accessory_ids', $accessories );
 	}
 
 	public static function get_accessories( $product ) {
-		return apply_filters( 'woocommerce_product_accessory_ids', (array) maybe_unserialize( $product->accessory_ids ), $product );
+		$product_id = electro_wc_get_product_id( $product );
+		$accessory_ids = get_post_meta( $product_id, '_accessory_ids', true );
+		return apply_filters( 'woocommerce_product_accessory_ids', (array) maybe_unserialize( $accessory_ids ), $product );
 	}
 
 	public static function add_product_specification_panel_tab() {
@@ -536,7 +562,7 @@ class Electro_WC_Helper {
 
 	public static function get_savings_on_sale( $product, $in = 'amount' ) {
 		
-		if( $product->product_type == 'variable' ) {
+		if( electro_wc_get_product_type( $product ) == 'variable' ) {
 			$var_regular_price = array();
 			$var_sale_price = array();
 			$available_variations = $product->get_available_variations();
@@ -544,21 +570,39 @@ class Electro_WC_Helper {
 				$variation_id = $available_variation['variation_id']; // Getting the variable id of just the 1st product. You can loop $available_variations to get info about each variation.
 				$variable_product = new WC_Product_Variation( $variation_id );
 
-				if( ! empty( $variable_product->regular_price ) )
-					$var_regular_price[] = $variable_product->regular_price;
-				if( ! empty( $variable_product->sale_price ) )
-					$var_sale_price[] = $variable_product->sale_price;
+				if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+					$variable_product_regular_price = $variable_product->regular_price;
+					$variable_product_sale_price = $variable_product->sale_price;
+				} else {
+					$variable_product_regular_price = $variable_product->get_regular_price();
+					$variable_product_sale_price = $variable_product->get_sale_price();
+				}
+				
+				if( ! empty( $variable_product_regular_price ) )
+					$var_regular_price[] = $variable_product_regular_price;
+				if( ! empty( $variable_product_sale_price ) )
+					$var_sale_price[] = $variable_product_sale_price;
 			}
 
 			$regular_price = max( $var_regular_price );
 			$sale_price = min( $var_sale_price );
 		} else {
-			$regular_price = $product->regular_price;
-			$sale_price = $product->sale_price;
+			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+				$regular_price = $product->regular_price;
+				$sale_price = $product->sale_price;
+			} else {
+				$regular_price = $product->get_regular_price();
+				$sale_price = $product->get_sale_price();
+			}
 		}
 
-		$regular_price = $product->get_display_price( $regular_price );
-		$sale_price = $product->get_display_price( $sale_price );
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			$regular_price = $product->get_display_price( $regular_price );
+			$sale_price = $product->get_display_price( $sale_price );
+		} else {
+			$regular_price = wc_get_price_to_display( $product, array( 'qty' => 1, 'price' => $regular_price ) );
+			$sale_price = wc_get_price_to_display( $product, array( 'qty' => 1, 'price' => $sale_price ) );
+		}
 
 		if ( 'amount' === $in ) {
 

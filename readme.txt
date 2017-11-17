@@ -11,10 +11,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Electro is a robust and flexible WordPress theme, designed by Transvelo to help you make the most out of using WooCommerce to power your online store. The design is well suited for Electronics Store, Vendor based marketplaces, affiliate websites. It is built and comes bundled with most of the advanced features available in most popular eCommerce websites like amazon, flipkart, snapdeal, walmart, alibaba, aliexpress, etc.
 
 == Documentation ==
-You can view the detailed Electro documentation at http://transvelo.github.io/docs/electro/
+You can view the detailed Electro documentation at https://transvelo.github.io/docs/electro/
 
 == Release History ==
-You can view the detailed Electro release history at http://transvelo.github.io/electro/changelog.txt
+You can view the detailed Electro release history at https://transvelo.github.io/electro/changelog.txt
 
 == Help & Support ==
-Customers can get support at http://transvelo.freshdesk.com/ Please remember the support is available only for bugs and any described feature not working. We do not provide customization or support for any third-party plugins including the ones that are bundled with the theme.
+Customers can get support at https://themeforest.net/item/electro-electronics-store-woocommerce-theme/15720624/support/ Please remember the support is available only for bugs and any described feature not working. We do not provide customization or support for any third-party plugins including the ones that are bundled with the theme.

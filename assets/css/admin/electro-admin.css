@@ -268,3 +268,6 @@
       #electro-home-page-options .electro_options_panel .ec-radios li input,
       #electro-home-page-options .ec-metaboxes-wrapper .ec-radios li input {
         width: auto; }
+
+tr[data-slug="slider-revolution"] + tr.plugin-update-tr {
+  display: none; }

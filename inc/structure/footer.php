@@ -110,7 +110,7 @@ if ( ! function_exists( 'footer_newsletter_form' ) ) {
 	}
 }
 
-if ( ! function_exists( 'electro_footer_contact_info' ) ) {
+if ( ! function_exists( 'electro_footer_contact' ) ) {
 	/**
 	 * Electro Contact Info Block at the footer
 	 */
@@ -446,7 +446,11 @@ if ( ! function_exists( 'electro_handheld_footer_bar_search' ) ) {
 	 */
 	function electro_handheld_footer_bar_search() {
 		echo '<a href="">' . esc_attr__( 'Search', 'electro' ) . '</a>';
-		electro_product_search();
+		if ( is_woocommerce_activated() ) {
+			electro_product_search();
+		} else {
+			electro_blog_search();
+		}
 	}
 }
 
@@ -459,7 +463,7 @@ if ( ! function_exists( 'electro_handheld_footer_bar_cart_link' ) ) {
 	function electro_handheld_footer_bar_cart_link() {
 		if ( is_woocommerce_activated() ) {
 		?>
-			<a class="footer-cart-contents" href="<?php echo esc_url( WC()->cart->get_cart_url() ); ?>" title="<?php esc_attr_e( 'View your shopping cart', 'electro' ); ?>">
+			<a class="footer-cart-contents" href="<?php echo esc_url( wc_get_cart_url() ); ?>" title="<?php esc_attr_e( 'View your shopping cart', 'electro' ); ?>">
 				<span class="cart-items-count count"><?php echo wp_kses_data( WC()->cart->get_cart_contents_count() );?></span>
 			</a>
 		<?php
@@ -498,4 +502,12 @@ if ( ! function_exists( 'electro_product_search' ) ) {
 	}
 }
 
-
+if ( ! function_exists( 'electro_blog_search' ) ) {
+	function electro_blog_search() {
+		?>
+		<div class="site-search">
+			<?php the_widget( 'WP_Widget_Search', 'title=' ); ?>
+		</div>
+		<?php
+	}
+}

@@ -53,7 +53,7 @@ add_action( 'electro_after_main_content',		'electro_content_wrapper_end',		20 );
  * @see  electro_post_nav()
  * @see  electro_display_comments()
  */
-add_action( 'electro_loop_before',			'electro_blog_navigation',			10 );
+add_action( 'electro_before_main_content',	'electro_blog_navigation',			9 );
 add_action( 'electro_loop_post',			'electro_post_loop_media',			10 );
 add_action( 'electro_loop_post',			'electro_post_body_wrap_start',		15 );
 add_action( 'electro_loop_post',			'electro_post_header',				20 );

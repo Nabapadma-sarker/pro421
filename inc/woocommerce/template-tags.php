@@ -312,9 +312,11 @@ if ( ! function_exists( 'electro_product_media_object' ) ) {
 	 */
 	function electro_product_media_object() {
 
-		global $product; ?>
+		global $product;
 
-		<a class="media-left" href="<?php echo esc_url( get_permalink( $product->id ) ); ?>" title="<?php echo esc_attr( $product->get_title() ); ?>">
+		$product_id = electro_wc_get_product_id( $product ); ?>
+
+		<a class="media-left" href="<?php echo esc_url( get_permalink( $product_id ) ); ?>" title="<?php echo esc_attr( $product->get_title() ); ?>">
 			<?php echo str_replace( 'class="', 'class="media-object ', woocommerce_get_product_thumbnail() ); ?>
 		</a>
 
@@ -349,7 +351,13 @@ if ( ! function_exists( 'electro_template_loop_categories' ) ) {
 	 */
 	function electro_template_loop_categories() {
 		global $product;
-		$categories = $product->get_categories();
+
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			$categories = $product->get_categories();
+		} else {
+			$product_id = electro_wc_get_product_id( $product );
+			$categories = wc_get_product_category_list( $product_id );
+		}
 		echo apply_filters( 'electro_template_loop_categories_html', wp_kses_post( sprintf( '<span class="loop-product-categories">%s</span>', $categories ) ) );
 	}
 }
@@ -573,18 +581,20 @@ if ( ! function_exists( 'electro_deal_countdown_timer' ) ) {
 	 *
 	 */
 	function electro_deal_countdown_timer( $product ) {
+		$product_id = electro_wc_get_product_id( $product );
+		$product_type = electro_wc_get_product_type( $product );
 		$sale_price_dates_from = $sale_price_dates_to = '';
-		if( $product->product_type == 'variable' ) {
+		if( $product_type == 'variable' ) {
 			$var_sale_price_dates_from = array();
 			$var_sale_price_dates_to = array();
 			$available_variations = $product->get_available_variations();
 			foreach ( $available_variations as $key => $available_variation ) {
 				$variation_id = $available_variation['variation_id']; // Getting the variable id of just the 1st product. You can loop $available_variations to get info about each variation.
 				if( $date_from = get_post_meta( $variation_id, '_sale_price_dates_from', true ) ) {
-					$var_sale_price_dates_from[] = date_i18n( 'Y-m-d H:i:s', $date_from );
+					$var_sale_price_dates_from[] = date_i18n( 'Y-m-d H:i:s', $date_from, true );
 				}
 				if( $date_to =get_post_meta( $variation_id, '_sale_price_dates_to', true ) ) {
-					$var_sale_price_dates_to[] = date_i18n( 'Y-m-d H:i:s', $date_to );
+					$var_sale_price_dates_to[] = date_i18n( 'Y-m-d H:i:s', $date_to, true );
 				}
 			}
 
@@ -593,21 +603,27 @@ if ( ! function_exists( 'electro_deal_countdown_timer' ) ) {
 			if( ! empty( $var_sale_price_dates_to ) )
 				$sale_price_dates_to = max( $var_sale_price_dates_to );
 		} else {
-			if( $date_from = get_post_meta( $product->id, '_sale_price_dates_from', true ) ) {
-				$sale_price_dates_from = date_i18n( 'Y-m-d H:i:s', $date_from );
+			if( $date_from = get_post_meta( $product_id, '_sale_price_dates_from', true ) ) {
+				$sale_price_dates_from = date_i18n( 'Y-m-d H:i:s', $date_from, true );
 			}
-			if( $date_to = get_post_meta( $product->id, '_sale_price_dates_to', true ) ) {
-				$sale_price_dates_to = date_i18n( 'Y-m-d H:i:s', $date_to );
+			if( $date_to = get_post_meta( $product_id, '_sale_price_dates_to', true ) ) {
+				$sale_price_dates_to = date_i18n( 'Y-m-d H:i:s', $date_to, true );
 			}
 		}
+
+		$deal_end_date = $sale_price_dates_to;
+		$deal_end_time = strtotime( $deal_end_date );
+		$current_date = current_time( 'Y-m-d H:i:s', true );
+		$current_time = strtotime( $current_date );
+		$time_diff = ( $deal_end_time - $current_time );
 		
-		if( ! empty( $sale_price_dates_to ) ) :
+		if( $time_diff > 0 ) :
 		?>
 		<div class="deal-countdown-timer">
 			<div class="marketing-text text-xs-center">
 				<?php echo apply_filters( 'electro_deal_countdown_timer_info_text', esc_html__( 'Hurry Up! Offer ends in:', 'electro' ) ); ?>
 			</div>
-			<span class="deal-end-date" style="display:none;"><?php echo get_date_from_gmt( $sale_price_dates_to, 'Y-m-d' ); ?></span>
+			<span class="deal-time-diff" style="display:none;"><?php echo apply_filters( 'electro_deal_countdown_timer_diff_time', $time_diff ); ?></span>
 			<div class="deal-countdown countdown"></div>
 		</div>
 		<?php
@@ -767,12 +783,65 @@ if ( ! function_exists( 'electro_template_loop_availability' ) ) {
 	function electro_template_loop_availability() {
 
 		global $product;
-		$availability = $product->get_availability();
+		
+		if ( $product->is_type( 'variable' ) ) {
+			
+			// Find all stock available variation ids
+			$available_variation_ids = array();
+			$available_variations = $product->get_available_variations();
+			foreach ( $available_variations as $key => $available_variation ) {
+				if( $available_variation['is_in_stock'] ) {
+					$available_variation_ids[] = $available_variation['variation_id'];
+				}
+			}
+
+			if( ! empty( $available_variation_ids ) ) {
+			
+				// Find default selected variation id
+				if( method_exists( $product, 'get_default_attributes' ) ) {
+					$default_attributes = $product->get_default_attributes();
+				} else {
+					$default_attributes = $product->get_variation_default_attributes();
+				}
+
+				foreach( $default_attributes as $key => $value ) {
+					if( strpos( $key, 'attribute_' ) === 0 ) {
+						continue;
+					}
+
+					unset( $default_attributes[ $key ] );
+					$default_attributes[ sprintf( 'attribute_%s', $key ) ] = $value;
+				}
+				
+				if( class_exists('WC_Data_Store') ) {
+					$data_store = WC_Data_Store::load( 'product' );
+					$variation_id = $data_store->find_matching_product_variation( $product, $default_attributes );
+				} else {
+					$variation_id = $product->get_matching_variation( $default_attributes );
+				}
+
+				// Check default selected variation id with availability in loop page
+				if( ! is_product() && ! in_array( $variation_id, $available_variation_ids ) ) {
+					$variation_id = min( $available_variation_ids );
+				} elseif( is_product() && empty( $variation_id ) ) {
+					$variation_id = min( $available_variation_ids );
+				}
+
+			}
+		}
+
+		if( ! empty( $variation_id ) ) {
+			$variation    = new WC_Product_Variation( $variation_id );
+			$availability = $variation->get_availability();
+		} else {
+			$availability = $product->get_availability();
+		}
 
 		if ( ! empty( $availability[ 'availability'] ) ) : ?>
 
-			<div class="availability <?php echo esc_attr( $availability['class'] ); ?>">
-				<?php echo esc_html__( 'Availablity:', 'electro' );?> <span><?php echo esc_html( $availability['availability'] ); ?></span></div>
+			<div class="availability">
+				<?php echo esc_html__( 'Availability:', 'electro' );?> <span class="electro-stock-availability"><p class="stock <?php echo esc_attr( $availability['class'] ); ?>"><?php echo esc_html( $availability['availability'] ); ?></p></span>
+			</div>
 
 		<?php endif;
 	}
@@ -809,7 +878,14 @@ if ( ! function_exists( 'electro_template_loop_rating') ) {
 		if ( get_option( 'woocommerce_enable_review_rating' ) === 'no' ){
 			return;
 		}
-		if ( $rating_html = $product->get_rating_html() ) :
+
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			$rating_html = $product->get_rating_html();
+		} else {
+			$rating_html = wc_get_rating_html( $product->get_average_rating() );
+		}
+		
+		if ( $rating_html ) :
 		else :
 			$rating_html  = '<div class="star-rating" title="' . sprintf( __( 'Rated %s out of 5', 'electro' ), 0 ) . '">';
             $rating_html .= '<span style="width:' . ( ( 0 / 5 ) * 100 ) . '%"><strong class="rating">' . 0 . '</strong> ' . __( 'out of 5', 'electro' ) . '</span>';
@@ -891,7 +967,11 @@ if ( ! function_exists( 'electro_show_wc_product_images' ) ) {
 
 		}
 
-		$attachment_ids = $product->get_gallery_attachment_ids();
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+			$attachment_ids = $product->get_gallery_attachment_ids();
+		} else {
+			$attachment_ids = $product->get_gallery_image_ids();
+		}
 
 		if ( $attachment_ids ) {
 			$loop 		= 0;
@@ -941,13 +1021,108 @@ if ( ! function_exists( 'electro_show_wc_product_images' ) ) {
 	}
 }
 
+if( ! function_exists( 'electro_wc_show_product_thumbnails' ) ) {
+	/**
+	 *
+	 */
+	function electro_wc_show_product_thumbnails() {
+		global $post, $product;
+		$columns           = apply_filters( 'woocommerce_product_thumbnails_columns', 4 );
+		$post_thumbnail_id = get_post_thumbnail_id( $post->ID );
+		$attachment_ids    = $product->get_gallery_image_ids();
+		$full_size_image   = wp_get_attachment_image_src( $post_thumbnail_id, 'full' );
+		$thumbnail_post    = get_post( $post_thumbnail_id );
+		$image_title       = $thumbnail_post->post_content;
+		$placeholder       = has_post_thumbnail() ? 'with-images' : 'without-images';
+		$wrapper_id        = 'electro-wc-product-gallery-' . uniqid();
+		$wrapper_classes   = apply_filters( 'electro_wc_single_product_image_gallery_classes', array(
+			'electro-wc-product-gallery',
+			'electro-wc-product-gallery--' . $placeholder,
+			'electro-wc-product-gallery--columns-' . absint( $columns ),
+			'images',
+		) );
+		$carousel_args     = apply_filters( 'electro_wc_product_thumbnails_carousel_args', array(
+			'selector'		=> '.electro-wc-product-gallery__wrapper > .electro-wc-product-gallery__image',
+			'animation'		=> 'slide',
+			'controlNav'	=> true,
+			'directionNav'  => false,
+			'animationLoop'	=> false,
+			'slideshow'		=> false,
+			'itemWidth'		=> 90,
+			'itemMargin'	=> 6,
+			'asNavFor'		=> '.woocommerce-product-gallery'
+		) );
+		?>
+		<div id="<?php echo esc_attr( $wrapper_id ); ?>" class="<?php echo esc_attr( implode( ' ', array_map( 'sanitize_html_class', $wrapper_classes ) ) ); ?>" data-columns="<?php echo esc_attr( $columns ); ?>">
+			<figure class="electro-wc-product-gallery__wrapper">
+				<?php
+				$attributes = array(
+					'title'                   => $image_title,
+					'data-large-image'        => $full_size_image[0],
+					'data-large-image-width'  => $full_size_image[1],
+					'data-large-image-height' => $full_size_image[2],
+				);
+
+				if ( has_post_thumbnail() ) {
+					$html  = '<figure data-thumb="' . get_the_post_thumbnail_url( $post->ID, 'shop_thumbnail' ) . '" class="electro-wc-product-gallery__image"><a href="' . esc_url( $full_size_image[0] ) . '">';
+					$html .= get_the_post_thumbnail( $post->ID, 'shop_thumbnail', $attributes );
+					$html .= '</a></figure>';
+				} else {
+					$html  = '<figure class="electro-wc-product-gallery__image--placeholder">';
+					$html .= sprintf( '<img src="%s" alt="%s" class="wp-post-image" />', esc_url( wc_placeholder_img_src() ), esc_html__( 'Awaiting product image', 'electro' ) );
+					$html .= '</figure>';
+				}
+
+				echo apply_filters( 'electro_wc_single_product_image_thumbnail_html', $html, get_post_thumbnail_id( $post->ID ) );
+
+				if ( $attachment_ids ) {
+					foreach ( $attachment_ids as $attachment_id ) {
+						$full_size_image  = wp_get_attachment_image_src( $attachment_id, 'full' );
+						$thumbnail        = wp_get_attachment_image_src( $attachment_id, 'shop_thumbnail' );
+						$thumbnail_post   = get_post( $attachment_id );
+						$image_title      = $thumbnail_post->post_content;
+
+						$attributes = array(
+							'title'                   => $image_title,
+							'data-large-image'        => $full_size_image[0],
+							'data-large-image-width'  => $full_size_image[1],
+							'data-large-image-height' => $full_size_image[2],
+						);
+
+						$html  = '<figure data-thumb="' . esc_url( $thumbnail[0] ) . '" class="electro-wc-product-gallery__image"><a href="' . esc_url( $full_size_image[0] ) . '">';
+						$html .= wp_get_attachment_image( $attachment_id, 'shop_thumbnail', false, $attributes );
+				 		$html .= '</a></figure>';
+
+						echo apply_filters( 'woocommerce_single_product_image_thumbnail_html', $html, $attachment_id );
+					}
+				}
+				?>
+			</figure>
+		</div>
+		<?php
+		$custom_script = "
+			jQuery(document).ready( function($){
+				var flex = $( '#" . esc_attr( $wrapper_id ) . "' );
+				var flex_args = " . json_encode( $carousel_args ) . ";
+				flex_args.asNavFor = flex.siblings( flex_args.asNavFor );
+				flex.flexslider( flex_args );
+			} );
+		";
+		wp_add_inline_script( 'electro-js', $custom_script );
+	}
+}
+
 if ( ! function_exists( 'electro_show_product_images' ) ) {
 	function electro_show_product_images() {
 
-		if( ! is_yith_zoom_magnifier_activated() ) {
+		if( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) && ! is_yith_zoom_magnifier_activated() ) {
 			global $post, $product, $woocommerce;
 
-			$attachment_ids = $product->get_gallery_attachment_ids();
+			if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+				$attachment_ids = $product->get_gallery_attachment_ids();
+			} else {
+				$attachment_ids = $product->get_gallery_image_ids();
+			}
 
 			echo '<div class="images electro-gallery">';
 
@@ -1047,7 +1222,30 @@ if ( ! function_exists( 'electro_show_product_images' ) ) {
 			}
 
 			echo '</div>';
+		} else {
+			woocommerce_show_product_images();
+			if( apply_filters( 'electro_wc_show_product_thumbnails_carousel', false ) ) {
+				electro_wc_show_product_thumbnails();
+			}
 		}
+	}
+}
+
+if ( ! function_exists( 'electro_wc_single_product_carousel_option_remove_thumb' ) ) {
+	function electro_wc_single_product_carousel_option_remove_thumb( $args ) {
+		if( apply_filters( 'electro_wc_show_product_thumbnails_carousel', false ) ) {
+			$args['controlNav'] = false;
+		}
+		return $args;
+	}
+}
+
+if ( ! function_exists( 'electro_single_product_image_gallery_classes' ) ) {
+	function electro_single_product_image_gallery_classes( $args ) {
+		if( apply_filters( 'electro_wc_show_product_thumbnails_carousel', false ) ) {
+			$args[] = 'electro-carousel-loaded';
+		}
+		return $args;
 	}
 }
 

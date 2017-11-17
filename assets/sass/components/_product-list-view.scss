@@ -75,6 +75,10 @@ ul.products > li.product.list-view {
 		padding-bottom: 0.714em;
 		border-bottom: 1px solid #ddd;
 		margin-bottom: 1.429em;
+
+		p.stock {
+			display: inline;
+		}
 	}
 
 	&:hover {
@@ -114,7 +118,7 @@ ul.products > li.product.list-view:not(.list-view-small) {
 	}
 
 	.button,.added_to_cart {
-		width: initial;
+		width: auto;
 	}
 }
 

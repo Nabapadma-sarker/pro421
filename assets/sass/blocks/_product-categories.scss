@@ -49,9 +49,12 @@
 		img {
 			@include img-fluid();
 			margin: 0 auto 1.429em auto;
+			position: static;
 		}
 
-		h3 {
+		h3,
+		h2,
+		.woocommerce-loop-category__title {
 			font-size: 1.286em;
 			font-weight: normal;
 			height: 1.286em;

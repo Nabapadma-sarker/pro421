@@ -4,6 +4,7 @@
 			<key name="product_brand_taxonomy" />
 			<key name="compare_page_id" />
 			<key name="shop_jumbotron_id" />
+			<key name="site_header_logo" />
 			<key name="header_vertical_menu_title" />
 			<key name="header_vertical_menu_icon" />
 			<key name="header_departments_menu_title" />
@@ -20,6 +21,7 @@
 			<key name="footer_address_title" />
 			<key name="footer_address" />
 			<key name="footer_credit" />
+			<key name="site_footer_logo" />
 		</key>
 	</admin-texts>
 </wpml-config>

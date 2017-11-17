@@ -23,6 +23,7 @@ add_filter( 'electro_loop_shop_per_page',				'redux_apply_shop_loop_per_page',		
 add_filter( 'electro_single_product_layout',			'redux_apply_single_product_layout',			10 );
 add_filter( 'electro_single_product_layout_style',		'redux_apply_single_product_layout_style',		10 );
 add_filter( 'electro_enable_related_products',          'redux_toggle_related_products_output',         10 );
+add_filter( 'electro_wc_show_product_thumbnails_carousel',	'redux_toggle_wc_product_thumbnails_carousel',	10 );
 add_filter( 'electro_product_brand_taxonomy',			'redux_apply_product_brand_taxonomy',			10 );
 add_filter( 'electro_product_comparison_page_id',		'redux_apply_product_comparison_page_id',		10 );
 add_filter( 'electro_shop_jumbotron_id',				'redux_apply_shop_jumbotron_id',				10 );
@@ -30,6 +31,7 @@ add_filter( 'electro_sticky_order_review',				'redux_toggle_sticky_payment_box',
 
 // Header Filters
 add_filter( 'electro_enable_top_bar',                   'redux_toggle_top_bar',                         10 );
+add_filter( 'electro_hide_top_bar_in_mobile',           'redux_toggle_top_bar_mobile',                  10 );
 add_filter( 'electro_header_logo_html',					'redux_apply_header_logo',						10 );
 add_filter( 'electro_logo_image_src',                   'redux_apply_logo_image_src',                   10 );
 add_filter( 'electro_header_style',						'redux_apply_header_style',						10 );

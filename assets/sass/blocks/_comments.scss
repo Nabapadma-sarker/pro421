@@ -44,7 +44,7 @@
 
 .comment-list,
 .pings-list{
-	
+
 	margin-bottom: 3.571em;
 
 	.comment,
@@ -143,7 +143,7 @@
 
 		.comment-reply-title {
 			font-size: 1.429em;
-			
+
 			small {
 				float: $end;
 				font-size: 0.7em;
@@ -180,6 +180,10 @@
 		label {
 			display: block;
 		}
+	}
+
+	.comment-form-url {
+		clear: both;
 	}
 
 	.comment-form-author,

@@ -21,6 +21,24 @@ if ( ! function_exists ( 'redux_toggle_top_bar' ) ) {
 	}	
 }
 
+if ( ! function_exists ( 'redux_toggle_top_bar_mobile' ) ) {
+	function redux_toggle_top_bar_mobile( $enable ) {
+		global $electro_options;
+
+		if ( ! isset( $electro_options['header_top_bar_show_mobile'] ) ) {
+			$electro_options['header_top_bar_show_mobile'] = false;
+		}
+
+		if ( $electro_options['header_top_bar_show_mobile'] ) {
+			$enable = true;
+		} else {
+			$enable = false;
+		}
+
+		return ! $enable;
+	}	
+}
+
 if ( ! function_exists( 'redux_apply_header_logo' ) ) {
 	function redux_apply_header_logo( $logo ) {
 		global $electro_options;

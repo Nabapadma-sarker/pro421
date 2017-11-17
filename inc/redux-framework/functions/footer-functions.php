@@ -345,6 +345,11 @@ if ( ! function_exists( 'redux_apply_social_networks' ) ) {
 				'icon'	=> 'fa fa-vk',
 				'id'	=> 'vk',
 			),
+			'telegram'        => array(
+				'label' => esc_html__('Telegram', 'electro'),
+				'id'    => 'telegram_link',
+				'icon'  => 'fa fa-telegram',
+			),
 			'rss'			=> array(
 				'label'	=> __( 'RSS', 'electro' ),
 				'icon'	=> 'fa fa-rss',

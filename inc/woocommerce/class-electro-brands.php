@@ -45,6 +45,31 @@ class Electro_Brands {
 	public function add_brand_fields() {
 		?>
 		<div class="form-field">
+			<?php 
+				if( post_type_exists( 'static_block' ) ) :
+
+					$args = array(
+						'posts_per_page'	=> -1,
+						'orderby'			=> 'title',
+						'post_type'			=> 'static_block',
+					);
+					$static_blocks = get_posts( $args );
+				endif;
+			?>
+			<div class="form-group">
+				<label><?php _e( 'Jumbotron', 'electro' ); ?></label>
+				<select id="product_brand_static_block_id" class="form-control" name="product_brand_static_block_id">
+					<option><?php echo __( 'Select a Static Block', 'electro' ); ?></option>
+				<?php if( !empty( $static_blocks ) ) : ?>
+				<?php foreach( $static_blocks as $static_block ) : ?>
+					<option value="<?php echo esc_attr( $static_block->ID ); ?>"><?php echo get_the_title( $static_block->ID ); ?></option>
+				<?php endforeach; ?>
+				<?php endif; ?>
+				</select>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="form-field">
 			<label><?php esc_html_e( 'Thumbnail', 'electro' ); ?></label>
 			<div id="product_brand_thumbnail" style="float:left;margin-right:10px;"><img src="<?php echo wc_placeholder_img_src(); ?>" width="60px" height="60px" alt="" /></div>
 			<div style="line-height:60px;">
@@ -120,7 +145,38 @@ class Electro_Brands {
 			$image = wp_get_attachment_thumb_url( $thumbnail_id );
 		else
 			$image = wc_placeholder_img_src();
+
+		$static_block_id 	= '';
+		$static_block_id 	= absint( get_woocommerce_term_meta( $term->term_id, 'static_block_id', true ) );
+
 		?>
+		<tr class="form-field">
+			<th scope="row" valign="top"><label><?php _e( 'Jumbotron', 'electro' ); ?></label></th>
+			<td>
+				<?php 
+					if( post_type_exists( 'static_block' ) ) :
+
+						$args = array(
+							'posts_per_page'	=> -1,
+							'orderby'			=> 'title',
+							'post_type'			=> 'static_block',
+						);
+						$static_blocks = get_posts( $args );
+					endif;
+				?>
+				<div class="form-group">
+					<select id="product_brand_static_block_id" class="form-control" name="product_brand_static_block_id">
+						<option><?php echo __( 'Select a Static Block', 'electro' ); ?></option>
+					<?php if( !empty( $static_blocks ) ) : ?>
+					<?php foreach( $static_blocks as $static_block ) : ?>
+						<option value="<?php echo esc_attr( $static_block->ID ); ?>" <?php echo ( $static_block_id == $static_block->ID  ? 'selected' : '' ); ?>><?php echo get_the_title( $static_block->ID ); ?></option>
+					<?php endforeach; ?>
+					<?php endif; ?>
+					</select>
+				</div>
+				<div class="clear"></div>
+			</td>
+		</tr>
 		<tr class="form-field">
 			<th scope="row" valign="top"><label><?php esc_html_e( 'Thumbnail', 'electro' ); ?></label></th>
 			<td>
@@ -191,8 +247,10 @@ class Electro_Brands {
 	 */
 	public function save_brand_fields( $term_id, $tt_id, $taxonomy ) {
 
-		if ( isset( $_POST['product_brand_thumbnail_id'] ) )
+		if ( isset( $_POST['product_brand_thumbnail_id'] ) ) {
 			update_woocommerce_term_meta( $term_id, 'thumbnail_id', absint( $_POST['product_brand_thumbnail_id'] ) );
+			update_woocommerce_term_meta( $term_id, 'static_block_id', absint( $_POST['product_brand_static_block_id'] ) );
+		}
 
 		delete_transient( 'wc_term_counts' );
 	}

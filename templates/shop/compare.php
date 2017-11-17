@@ -27,15 +27,16 @@ global $product, $yith_woocompare, $post; ?>
             <tr>
                 <th><?php echo esc_html__( 'Product', 'electro' ); ?></th>
                 <?php foreach( $products as $key => $product ) : ?>
+                    <?php $product_id = electro_wc_get_product_id( $product ); ?>
                 <td>
-                    <a href="<?php echo get_permalink( $product->post->ID ); ?>" class="product">
+                    <a href="<?php echo get_permalink( $product_id ); ?>" class="product">
                         <div class="product-image">
                             <div class="image">
                                 <?php 
-                                    if( has_post_thumbnail( $product->post->ID ) ) {
-                                        echo get_the_post_thumbnail( $product->post->ID, 'shop_catalog' );
+                                    if( has_post_thumbnail( $product_id ) ) {
+                                        echo get_the_post_thumbnail( $product_id, 'shop_catalog' );
                                     } elseif( wc_placeholder_img_src() ) {
-                                        echo wc_placeholder_img_src( 'shop_catalog' );
+                                        echo wc_placeholder_img( 'shop_catalog' );
                                     }
                                 ?>
                             </div>
@@ -130,7 +131,14 @@ global $product, $yith_woocompare, $post; ?>
                 <th>&nbsp;</th>
                 <?php foreach( $products as $i => $product ) : ?>
                 <td class="text-center">
-                    <a href="<?php echo esc_url( $yith_woocompare->obj->remove_product_url( $product->id ) ); ?>" data-product_id="<?php echo esc_attr( $product->id ); ?>" class="remove-icon" title="<?php echo esc_attr( esc_html__( 'Remove', 'electro' ) ); ?>"><i class="fa fa-times"></i></a>
+                    <?php 
+                        $remove_product_url_args    = array(
+                            'id'     => electro_wc_get_product_id( $product ),
+                            'action' => $yith_woocompare->obj->action_remove
+                        );
+                        $remove_product_url = esc_url_raw( add_query_arg( $remove_product_url_args, electro_get_compare_page_url() ) );
+                    ?>
+                    <a href="<?php echo esc_url( $remove_product_url ); ?>" data-product_id="<?php echo esc_attr( electro_wc_get_product_id( $product ) ); ?>" class="remove-icon" title="<?php echo esc_attr( esc_html__( 'Remove', 'electro' ) ); ?>"><i class="fa fa-times"></i></a>
                 </td>
                 <?php endforeach ?>
             </tr>

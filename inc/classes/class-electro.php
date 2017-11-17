@@ -26,8 +26,13 @@ if ( ! class_exists( 'Electro' ) ) :
 			add_filter( 'body_class', array( $this, 'body_classes' ) );
 			add_action( 'admin_menu', array( $this, 'add_custom_css_page' ) );
 			add_action( 'wp_footer',  array( $this, 'get_structured_data' ) );
+			add_action( 'vc_before_init', array( $this, 'set_vc_as_theme' ) );
 		}
 
+		public function set_vc_as_theme() {
+		    vc_set_as_theme();
+		}
+		
 		public function add_custom_css_page() {
 			if ( apply_filters( 'electro_should_add_custom_css_page', false ) ) {
 				add_submenu_page( 'themes.php', 'Custom Color CSS', 'Custom Color CSS', 'manage_options', 'custom-primary-color-css-page', 'electro_custom_primary_color_page' );
@@ -46,7 +51,9 @@ if ( ! class_exists( 'Electro' ) ) :
 				$classes[] = 'group-blog';
 			}
 
-			if ( ! function_exists( 'woocommerce_breadcrumb' ) && ! function_exists( 'electro_breadcrumb' ) ) {
+			$show_breadcrumb = apply_filters( 'electro_show_breadcrumb', true );
+
+			if ( ! $show_breadcrumb || ( ! function_exists( 'woocommerce_breadcrumb' ) && ! function_exists( 'electro_breadcrumb' ) ) ) {
 				$classes[]	= 'no-breadcrumb';
 			}
 

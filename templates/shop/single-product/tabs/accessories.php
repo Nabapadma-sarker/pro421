@@ -23,7 +23,7 @@ if ( sizeof( $accessories ) === 0 && !array_filter( $accessories ) ) {
 
 $meta_query = WC()->query->get_meta_query();
 
-$args = array(
+$args = apply_filters( 'electro_accessories_query_args', array(
 	'post_type'           => 'product',
 	'ignore_sticky_posts' => 1,
 	'no_found_rows'       => 1,
@@ -31,7 +31,7 @@ $args = array(
 	'orderby'             => 'post__in',
 	'post__in'            => $accessories,
 	'meta_query'          => $meta_query
-);
+) );
 
 unset( $args['meta_query'] );
 
@@ -51,7 +51,7 @@ if ( $products->have_posts() ) : ?>
 
 				<?php woocommerce_product_loop_start(); ?>
 
-					<li class="post-<?php echo esc_attr( $product->id ); ?> product first">
+					<li class="post-<?php echo esc_attr( electro_wc_get_product_id( $product ) ); ?> product first">
 						<div class="product-outer">
 							<div class="product-inner">
 								<?php electro_template_loop_categories(); ?>
@@ -69,15 +69,20 @@ if ( $products->have_posts() ) : ?>
 					<?php
 						$count++;
 						$price_html = '';
+						$display_price = 0;
 
 						if ( $price_html = $product->get_price_html() ) {
-							$display_price = $product->get_display_price();
+							if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+								$display_price = $product->get_display_price();
+							} else {
+								$display_price = wc_get_price_to_display( $product );
+							}
 							$price_html = '<span class="accessory-price">' . wc_price( $display_price ) . $product->get_price_suffix() . '</span>';
 						}
 
-						$total_price += $product->get_price();
+						$total_price += $display_price;
 						
-						$add_to_cart_checkbox = '<div class="checkbox accessory-checkbox"><label><input checked disabled type="checkbox" class="product-check" data-price="'  . $product->get_price() . '" data-product-id="' . $product->id . '" data-product-type="' . $product->product_type . '" /> <span class="product-title"><strong>' . esc_html__( 'This product: ', 'electro' ) . '</strong>' . get_the_title() . '</span> - ' . $price_html . '</label></div>';
+						$add_to_cart_checkbox = '<div class="checkbox accessory-checkbox"><label><input checked disabled type="checkbox" class="product-check" data-price="'  . $display_price . '" data-product-id="' . electro_wc_get_product_id( $product ) . '" data-product-type="' . electro_wc_get_product_type( $product ) . '" /> <span class="product-title"><strong>' . esc_html__( 'This product: ', 'electro' ) . '</strong>' . get_the_title() . '</span> - ' . $price_html . '</label></div>';
 					?>
 
 					<?php $woocommerce_loop['loop']    = 1; // Set to 1 because we have already displayed the single product just above ?>
@@ -90,19 +95,24 @@ if ( $products->have_posts() ) : ?>
 							global $product;
 							
 							$price_html = '';
+							$display_price = 0;
 
 							if ( $price_html = $product->get_price_html() ) {
-								$display_price = $product->get_display_price();
+								if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '2.7', '<' ) ) {
+									$display_price = $product->get_display_price();
+								} else {
+									$display_price = wc_get_price_to_display( $product );
+								}
 								$price_html = '<span class="accessory-price">' . wc_price( $display_price ) . $product->get_price_suffix() . '</span>';
 							}
 
-							$total_price += $product->get_price();
+							$total_price += $display_price;
 
 							$prefix = '';
 
 							$count++;
 
-							$add_to_cart_checkbox .= '<div class="checkbox accessory-checkbox"><label><input checked type="checkbox" class="product-check" data-price="'  . $product->get_price() . '" data-product-id="' . $product->id . '" data-product-type="' . $product->product_type . '" /> <span class="product-title">' . $prefix . get_the_title() . '</span> - ' . $price_html . '</label></div>';
+							$add_to_cart_checkbox .= '<div class="checkbox accessory-checkbox"><label><input checked type="checkbox" class="product-check" data-price="'  . $display_price . '" data-product-id="' . electro_wc_get_product_id( $product ) . '" data-product-type="' . electro_wc_get_product_type( $product ) . '" /> <span class="product-title">' . $prefix . get_the_title() . '</span> - ' . $price_html . '</label></div>';
 						?>
 
 					<?php endwhile; // end of the loop. ?>
@@ -134,6 +144,7 @@ if ( $products->have_posts() ) : ?>
 				'success'		=> sprintf( '<div class="woocommerce-message">%s <a class="button wc-forward" href="%s">%s</a></div>', esc_html__( 'Products was successfully added to your cart.', 'electro' ), wc_get_cart_url(), esc_html__( 'View Cart', 'electro' ) ),
 				'empty'			=> sprintf( '<div class="woocommerce-error">%s</div>', esc_html__( 'No Products selected.', 'electro' ) ),
 				'no_variation'	=> sprintf( '<div class="woocommerce-error">%s</div>', esc_html__( 'Product Variation does not selected.', 'electro' ) ),
+				'not_available'	=> sprintf( '<div class="woocommerce-error">%s</div>', esc_html__( 'Sorry, this product is unavailable.', 'electro' ) ),
 			) );
 		?>
 		<script type="text/javascript">
@@ -143,7 +154,9 @@ if ( $products->have_posts() ) : ?>
 					var product_count = 0;
 					$('.accessory-checkbox .product-check').each(function() {
 						if( $(this).is(':checked') ) {
-							product_count++;
+							if( $(this).data( 'price' ) !== '' ) {
+								product_count++;
+							}
 						}
 					});
 					return product_count;
@@ -153,7 +166,9 @@ if ( $products->have_posts() ) : ?>
 					var total_price = 0;
 					$('.accessory-checkbox .product-check').each(function() {
 						if( $(this).is(':checked') ) {
-							total_price += parseFloat( $(this).data( 'price' ) );
+							if( $(this).data( 'price' ) !== '' ) {
+								total_price += parseFloat( $(this).data( 'price' ) );
+							}
 						}
 					});
 					return total_price;
@@ -191,6 +206,20 @@ if ( $products->have_posts() ) : ?>
 
 				function accessory_is_variation_selected(){
 					if( $(".single_add_to_cart_button").is(":disabled") ) {
+						return false;
+					}
+					return true;
+				}
+
+				function accessory_is_variation_available(){
+					if( $(".single_add_to_cart_button").length === 0 || $(".single_add_to_cart_button").hasClass("disabled") || $(".single_add_to_cart_button").hasClass("wc-variation-is-unavailable") ) {
+						return false;
+					}
+					return true;
+				}
+
+				function accessory_is_product_available(){
+					if( $(".single_add_to_cart_button").length === 0 || $(".single_add_to_cart_button").hasClass("disabled") ) {
 						return false;
 					}
 					return true;
@@ -246,6 +275,7 @@ if ( $products->have_posts() ) : ?>
 						data: { 'action': "electro_accessories_total_price", 'price': total_price  },
 						success : function( response ) {
 							$( 'span.total-price-html .amount' ).html( response );
+							$( 'span.total-products' ).html( accessory_checked_count() );
 						}
 					})
 				});
@@ -281,6 +311,10 @@ if ( $products->have_posts() ) : ?>
 						var accerories_alert_msg = '<?php echo wp_kses_post( $alert_message['empty'] ); ?>';
 					} else if( accerories_variable_product_ids.length > 0 && accessory_is_variation_selected() === false ) {
 						var accerories_alert_msg = '<?php echo wp_kses_post( $alert_message['no_variation'] ); ?>';
+					} else if( accerories_variable_product_ids.length > 0 && accessory_is_variation_available() === false ) {
+						var accerories_alert_msg = '<?php echo wp_kses_post( $alert_message['not_available'] ); ?>';
+					} else if( accerories_variable_product_ids.length === 0 && accessory_is_product_available() === false ) {
+						var accerories_alert_msg = '<?php echo wp_kses_post( $alert_message['not_available'] ); ?>';
 					} else {
 						for (var i = 0; i < accerories_all_product_ids.length; i++ ) {
 							if( ! $.inArray( accerories_all_product_ids[i], accerories_variable_product_ids ) ) {

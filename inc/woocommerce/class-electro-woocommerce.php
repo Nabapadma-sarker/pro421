@@ -73,6 +73,10 @@ if ( ! class_exists( 'Electro_WooCommerce' ) ) :
 			
 			global $product, $post;
 
+			$product_id = electro_wc_get_product_id( $product );
+			$specifications = get_post_meta( $product_id, '_specifications', true );
+			$specifications_display_attributes = get_post_meta( $product_id, '_specifications_display_attributes', true );
+
 			if ( isset( $tabs['description'] ) ) {
 				$tabs['description']['callback'] = 'electro_product_description_tab';
 			}
@@ -90,7 +94,7 @@ if ( ! class_exists( 'Electro_WooCommerce' ) ) :
 			}
 
 			// Specification tab - shows attributes
-			if ( $product && ( !empty( $product->specifications ) || ( $product->specifications_display_attributes == 'yes' && ( $product->has_attributes() || ( $product->enable_dimensions_display() && ( $product->has_dimensions() || $product->has_weight() ) ) ) ) ) ) {
+			if ( $product && ( !empty( $specifications ) || ( $specifications_display_attributes == 'yes' && ( $product->has_attributes() || ( apply_filters( 'wc_product_enable_dimensions_display', true ) && ( $product->has_dimensions() || $product->has_weight() ) ) ) ) ) ) {
 				$tabs['specification'] = array(
 					'title'    => esc_html__( 'Specification', 'electro' ),
 					'priority' => 20,

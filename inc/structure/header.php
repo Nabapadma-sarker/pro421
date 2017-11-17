@@ -20,7 +20,6 @@ if ( ! function_exists( 'electro_enqueue_styles' ) ) {
 			'fontawesome'	=> 'font-awesome.min.css',
 			'animate'		=> 'animate.min.css',
 			'font-electro'	=> 'font-electro.css'
-
 		) );
 
 		foreach( $css_vendors as $handle => $css_file ) {
@@ -93,6 +92,7 @@ if ( ! function_exists( 'electro_enqueue_scripts' ) ) {
 			'ajax_loader_url'		=> get_template_directory_uri() . '/assets/images/ajax-loader.gif',
 			'enable_sticky_header'	=> apply_filters( 'electro_enable_sticky_header', true ),
 			'enable_live_search'	=> apply_filters( 'electro_enable_live_search', false ),
+			'live_search_limit'		=> apply_filters( 'electro_live_search_limit', 10 ),
 			'live_search_template'	=> apply_filters( 'electro_live_search_template', '<a href="{{url}}" class="media live-search-media"><img src="{{image}}" class="media-left media-object flip pull-left" height="60" width="60"><div class="media-body"><p>{{{value}}}</p></div></a>' ),
 			'live_search_empty_msg'	=> apply_filters( 'electro_live_search_empty_msg', esc_html__( 'Unable to find any products that match the currenty query', 'electro' ) ),
 			'deal_countdown_text'	=> apply_filters( 'electro_deal_countdown_timer_clock_text', array(
@@ -215,7 +215,19 @@ if ( ! function_exists( 'electro_top_bar' ) ) {
 
 		if ( apply_filters( 'electro_enable_top_bar', true ) ) : ?>
 
-		<div class="top-bar <?php echo has_electro_mobile_header() ? 'hidden-md-down' : ''; ?>">
+		<?php 
+
+		$top_bar_classes = 'top-bar';
+
+		if ( has_electro_mobile_header() ) {
+			if ( apply_filters( 'electro_hide_top_bar_in_mobile', true ) ) {
+				$top_bar_classes .= ' hidden-md-down';
+			}
+		}
+
+		?>
+
+		<div class="<?php echo esc_attr( $top_bar_classes ); ?>">
 			<div class="container">
 			<?php
 				wp_nav_menu( array(
@@ -226,23 +238,16 @@ if ( ! function_exists( 'electro_top_bar' ) ) {
 					'fallback_cb'       => 'wp_bootstrap_navwalker::fallback',
 					'walker'            => new wp_bootstrap_navwalker()
 				) );
-            ?>
-            
-            <div class="pull-right">
-            
-        <div class="col-md-4">
-         <?php
-        echo do_shortcode('[google-translator]');
-        ?>
-        </div>
-        <div class="col-md-8">
-            <?php
-				wedevs_header_user_menu();
+
+				wp_nav_menu( array(
+					'theme_location'	=> 'topbar-right',
+					'container'			=> false,
+					'depth'				=> 2,
+					'menu_class'		=> 'nav nav-inline pull-right animate-dropdown flip',
+					'fallback_cb'       => 'wp_bootstrap_navwalker::fallback',
+					'walker'            => new wp_bootstrap_navwalker()
+				) );
 			?>
-        </div>
-       
-       
-			</div>
 			</div>
 		</div><!-- /.top-bar -->
 

@@ -43,7 +43,7 @@ class Electro_Meta_Box_Home_v3 {
 		<div class="panel-wrap meta-box-home">
 			<ul class="home_data_tabs ec-tabs">
 			<?php
-				$product_data_tabs = apply_filters( 'woocommerce_product_data_tabs', array(
+				$product_data_tabs = apply_filters( 'electro_home_v3_data_tabs', array(
 					'general' => array(
 						'label'  => __( 'General', 'electro' ),
 						'target' => 'general_block',
@@ -105,7 +105,12 @@ class Electro_Meta_Box_Home_v3 {
 						'id'		=> '_home_v3_header_style',
 						'label'		=> esc_html__( 'Header Style', 'electro' ),
 						'name'		=> '_home_v3[header_style]',
-						'options'	=> array( '' => esc_html__( 'Normal', 'electro' ), 'v4' => esc_html__( 'Full Color Background', 'electro' ) ),
+						'options'		=> array(
+							'v1'	=> esc_html__( 'Header v1', 'electro' ),
+							'v2'	=> esc_html__( 'Header v2', 'electro' ),
+							'v3'	=> esc_html__( 'Header v3', 'electro' ),
+							'v4'	=> esc_html__( 'Header v4', 'electro' ),
+						),
 						'value'		=> isset( $home_v3['header_style'] ) ? $home_v3['header_style'] : '',
 					) );
 				?>
@@ -113,6 +118,7 @@ class Electro_Meta_Box_Home_v3 {
 				<div class="options_group">
 					<?php 
 						$home_v3_blocks = array(
+							'hpc'   => esc_html__( 'Page content', 'electro' ),
 							'sdr'	=> esc_html__( 'Slider', 'electro' ),
 							'fl'	=> esc_html__( 'Features List', 'electro' ),
 							'ad'	=> esc_html__( 'Ads Block', 'electro' ),
@@ -622,7 +628,7 @@ class Electro_Meta_Box_Home_v3 {
 	public static function save( $post_id, $post ) {
 		if ( isset( $_POST['_home_v3'] ) ) {
 			$clean_home_v3_options = electro_clean_kses_post( $_POST['_home_v3'] );
-			update_post_meta( $post_id, '_home_v3_options',  addslashes( json_encode( $clean_home_v3_options ) ) );
+			update_post_meta( $post_id, '_home_v3_options',  serialize( $clean_home_v3_options ) );
 		}	
 	}
 }

@@ -28,13 +28,50 @@ label {
 	@include form-control-focus();
 }
 
-.select2-container .select2-choice {
-	font-size: 1em;
-	line-height: 1.286em;
-	border: 1px solid #ddd;
-	padding: 0.858em 1.858em;
-	border-radius: 1.286em;
-	width: 100%;
+.woocommerce-widget-layered-nav-dropdown .select2-container,
+.select2-container {
+	&:focus {
+		outline: none;
+	}
+
+	.select2-choice,
+	.select2-selection {
+		font-size: 1em;
+		line-height: 1.286em;
+		border: 1px solid #ddd;
+		width: 100%;
+	}
+
+	.select2-selection {
+		padding: 8px 18px;
+
+		.select2-selection__arrow {
+			top: 0;
+			right: 10px;
+			height: 44px;
+		}
+
+		&.select2-selection--single {
+			height: 44px;
+			border-radius: 50px;
+		}
+
+		&.select2-selection--multiple {
+			border-radius: 3px;
+			border: 1px solid #ddd;
+		}
+	}
+
+	.select2-choice {
+		padding: 0.858em 1.858em;
+	}
+}
+
+.woocommerce-widget-layered-nav-dropdown .select2-container--open,
+.select2-container--open {
+	.select2-selection.select2-selection--single {
+		border-radius: 20px;
+	}
 }
 
 textarea.input-text {
@@ -113,12 +150,16 @@ input[type="submit"] {
 .form-row {
 	@include make-col();
 	@include make-col-span(12);
-	
+
 	@include media-breakpoint-up(md) {
 		@include make-col-span(12);
 	}
 
 	margin-bottom: 1.714em;
+
+	label:not(.inline) {
+		display: block;
+	}
 }
 
 #billing_address_2_field {
@@ -130,6 +171,11 @@ input[type="submit"] {
 	@include media-breakpoint-up(md) {
 		@include make-col-span(6);
 	}
+}
+
+.form-row-wide {
+	clear: both;
+	width: 100%;
 }
 
 

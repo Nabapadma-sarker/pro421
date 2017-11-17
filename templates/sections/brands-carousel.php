@@ -14,7 +14,7 @@ $img_classes = apply_filters( 'electro_bc_should_desaturate', true ) ? 'img-resp
 <section class="brands-carousel">
 	<h2 class="sr-only"><?php echo esc_html__( 'Brands Carousel', 'electro' ); ?></h2>
 	<div class="container">
-		<div id="owl-brands" class="owl-brands owl-carousel unicase-owl-carousel owl-outer-nav">
+		<div id="owl-brands" class="owl-brands owl-carousel unicase-owl-carousel owl-outer-nav" data-ride="owl-carousel" data-carousel-selector="self" data-carousel-options="<?php echo esc_attr( json_encode( $carousel_args ) ); ?>">
 		
 			<?php foreach ( $terms as $term ) :	?>
 			
@@ -60,10 +60,5 @@ $img_classes = apply_filters( 'electro_bc_should_desaturate', true ) ? 'img-resp
 			<?php endforeach; ?>
 			
 		</div><!-- /.owl-carousel -->
-		<script type="text/javascript">
-			jQuery(document).ready( function($){
-				$( '#owl-brands' ).owlCarousel( <?php echo json_encode( $carousel_args );?> );
-			} );
-		</script>
 	</div>
 </section>

@@ -10,6 +10,11 @@
 		display: inline-block;
 	}
 
+	.woocommerce-form__input-checkbox {
+		position: relative;
+    	margin-left: 0;
+	}
+
 	.input-checkbox {
 		float: $start;
 		margin-#{$end}: 0.714em;

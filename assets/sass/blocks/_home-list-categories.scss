@@ -12,7 +12,9 @@
 
 			@include media-breakpoint-up(md) {
 				@include make-col-span(6);
+			}
 
+			@include media-breakpoint-down(md) {
 				&:nth-child(2n) {
 					&::after {
 						content: none;

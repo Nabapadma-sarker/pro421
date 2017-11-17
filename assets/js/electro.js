@@ -90,7 +90,7 @@
 	var is_rtl = $('body,html').hasClass('rtl');
 
 	if ( is_rtl ) {
-	
+
 		window.vc_rowBehaviour = function () {
 			var $ = window.jQuery;
 			var local_function = function () {
@@ -118,7 +118,7 @@
 							'width': $el_wrapper.width()
 						} );
 					}
-					
+
 					if ( ! $el.data( 'vcStretchContent' ) ) {
 						var padding = (- 1 * offset);
 						if ( padding < 0 ) {
@@ -191,7 +191,7 @@
 			};
 
 			$( window ).unbind( 'resize.vcRowBehaviour' ).bind( 'resize.vcRowBehaviour', local_function );
-			
+
 			local_function();
 			parallaxRow();
 		}
@@ -239,10 +239,16 @@
 			target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
 
 			if ( target.length ) {
+
+				scrollTo = target.offset().top;
+
+				if ( $('.sticky-wrapper > .stuck' ).length > 0 ) {
+					scrollTo = scrollTo - 40;
+				}
+
 				$('html, body').animate({
-					scrollTop: target.offset().top
+					scrollTop: scrollTo
 				}, 1000);
-				//return false;
 			}
 		}
 	});
@@ -255,6 +261,9 @@
 	});
 
 	$( window ).load( function() {
+		
+		columnConform();
+		
 		$( '.electro-handheld-footer-bar .search > a' ).click( function(e) {
 			$( this ).parent().toggleClass( 'active' );
 			e.preventDefault();
@@ -265,18 +274,41 @@
 	$('li.dropdown-submenu > a').on('click', function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if ( $(this).closest('li.dropdown-submenu').hasClass('open') ) {
-			$(this).closest('li.dropdown-submenu').removeClass('open');
+		var $this = $(this);
+		var $current_dd = $this.closest('li.dropdown-submenu');
+		if ( $current_dd.hasClass('open') ) {
+			$current_dd.removeClass('open').find('li.dropdown-submenu.open').removeClass('open');
 		} else {
-			$(this).closest('li.dropdown-submenu').removeClass('open');
-			$(this).closest('li.dropdown-submenu').addClass('open');
+			$current_dd.removeClass('open');
+			$current_dd.siblings('li.dropdown-submenu.open').removeClass('open').find('li.dropdown-submenu.open').removeClass('open');
+			$current_dd.addClass('open');
 		}
+	});
+
+	// Bootstrap Multi level dropdown remove on outside click
+	$( document ).on('hidden.bs.dropdown', function ( event ) {
+		$(this).find('li.dropdown-submenu.open').removeClass('open');
 	});
 
 	$(document).ready( function() {
 
-		// Resize Select
+		// Set a cookie and hide the store notice when the dismiss button is clicked
+		$( '.woocommerce-store-notice__dismiss-link' ).on( 'click', function() {
+			$('body').addClass( 'woocommerce-store-notice-dismissed' );
+		} );
+
+		// Check the value of that cookie and show/hide the notice accordingly
 		
+		if ( typeof Cookies != 'undefined' ) {
+			if ( 'hidden' === Cookies.get( 'store_notice' ) ) {
+				$('body').addClass( 'woocommerce-store-notice-dismissed' );
+			} else {
+				$('body').removeClass( 'woocommerce-store-notice-dismissed' );
+			}
+		}
+
+		// Resize Select
+
 		$( "select.resizeselect" ).resizeselect();
 
 		/*===================================================================================*/
@@ -360,14 +392,24 @@
 	/*  Add to Cart animation
 	/*===================================================================================*/
 
-
 	$( 'body' ).on( 'adding_to_cart', function( e, $btn, data){
 		$btn.closest( '.product' ).block();
 	});
 
 	$( 'body' ).on( 'added_to_cart', function(){
 		$( '.product' ).unblock();
-		return false;
+	});
+
+	/*===================================================================================*/
+	/*  WC Variation Availability
+	/*===================================================================================*/
+
+	$( 'body' ).on( 'woocommerce_variation_has_changed', function( e ) {
+		var $singleVariationWrap = $( 'form.variations_form' ).find( '.single_variation_wrap' );
+		var $availability = $singleVariationWrap.find( '.woocommerce-variation-availability' ).html();
+		if ( typeof $availability !== "undefined" && $availability !== false ) {
+			$( '.electro-stock-availability' ).html( $availability );
+		}
 	});
 
 	/*===================================================================================*/
@@ -378,9 +420,9 @@
 		var deal_countdown_text = electro_options.deal_countdown_text;
 
 		// set the date we're counting down to
-		var deal_end_date = $(this).children('.deal-end-date').html();
+		var deal_time_diff = $(this).children('.deal-time-diff').text();
 		var countdown_output = $(this).children('.deal-countdown');
-		var target_date = new Date( deal_end_date ).getTime();
+		var target_date = ( new Date().getTime() ) + ( deal_time_diff * 1000 );
 
 		// variables for time units
 		var days, hours, minutes, seconds;
@@ -408,7 +450,7 @@
 
 		}, 1000 );
 	});
-	
+
 
 	$( document ).ready( function() {
 
@@ -435,9 +477,6 @@
 				$( '.wc-tabs a[href="' + hash_value + '"]' ).trigger( 'click' );
 			break;
 		}
-
-		// Adjust Product Item heights
-		columnConform();
 
 		// Set Home Page Sidebar margin-top
 		var departments_menu_height = $( '.page-template-template-homepage-v2 .departments-menu > li > ul.dropdown-menu' ).height(),
@@ -614,7 +653,7 @@
 		}
 
 		// If we're in hand-held navigation...
-		if( electro_options.enable_sticky_header == '1' ) {
+		if( electro_options.enable_sticky_header == '1' && $( "#page" ).find( '.handheld-navbar-toggle-buttons' ).length > 0 ) {
 			var sticky_hh_nav = new Waypoint.Sticky({
 				element: $('.handheld-navbar-toggle-buttons')[0]
 			});
@@ -653,6 +692,31 @@
 					$( '.single-product .electro-gallery .thumbnails-single' ).trigger('to.owl.carousel', [$(this).index(), 300, true]);
 				}
 			});
+		});
+
+		$( '[data-ride="owl-carousel"]').each( function() {
+			var $this = $( this ), carouselDiv = $this.data( 'carouselSelector' ), carouselOptions = $this.data( 'carouselOptions' ),
+			shouldReplaceActiveClass = $this.data( 'replaceActiveClass' ), $carousel_elem;
+
+			if ( 'self' === carouselDiv ) {
+				$carousel_elem = $this.owlCarousel( carouselOptions );
+			} else {
+				$carousel_elem = $this.find( carouselDiv );
+			}
+
+			if ( true === shouldReplaceActiveClass ) {
+				$carousel_elem.on( 'initialized.owl.carousel translated.owl.carousel', function() {
+					var $this = $(this);
+
+					$this.find( '.owl-item.last-active' ).each( function() {
+						$(this).removeClass( 'last-active' );
+					});
+
+					$(this).find( '.owl-item.active' ).last().addClass( 'last-active' );
+				});
+			}
+
+			$carousel_elem.owlCarousel( carouselOptions );
 		});
 
 		$( '.single-product .electro-gallery' ).each( function() {
@@ -771,6 +835,7 @@
 					name: 'search',
 					source: searchProducts.ttAdapter(),
 					displayKey: 'value',
+					limit: electro_options.live_search_limit,
 					templates: {
 						empty : [
 							'<div class="empty-message">',

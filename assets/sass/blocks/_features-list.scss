@@ -29,6 +29,8 @@
 	.feature {
 		padding-top: 2.143em;
 		padding-bottom: 2.143em;
+		@include make-col();
+		@include make-col-span(12);
 	}
 
 	.feature + .feature {
@@ -41,21 +43,33 @@
 		}
 	}
 
-	&.columns-4 .feature {
-		@include make-col();
-		@include make-col-span(12);
+	&.columns-2 .feature {
+		@include media-breakpoint-up(lg) {
+			@include make-col-span(6);
+		}
+	}
 
+	&.columns-3 .feature {
 		@include media-breakpoint-up(lg) {
 			@include make-col-span(4);
 		}
 	}
 
-	&.columns-5 .feature {
-		@include make-col();
-		@include make-col-span(12);
+	&.columns-4 .feature {
+		@include media-breakpoint-up(lg) {
+			@include make-col-span(3);
+		}
+	}
 
+	&.columns-5 .feature {
 		@include media-breakpoint-up(lg) {
 			width: 20%;
+		}
+	}
+
+	&.columns-6 .feature {
+		@include media-breakpoint-up(lg) {
+			@include make-col-span(2);
 		}
 	}
 }

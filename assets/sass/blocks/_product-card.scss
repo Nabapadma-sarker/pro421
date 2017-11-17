@@ -58,8 +58,6 @@
 				opacity: 0;
 				padding-top: 0.214em;
 				border-top: 1px solid #eaeaea;
-				//transform: translateY(40%);
-				//transition: all 0.2s ease 0s;
 
 				.action-buttons > div {
 					margin-#{$end}: 15px;
@@ -73,7 +71,6 @@
 
 		&:hover .media-body .hover-area {
 			visibility: visible;
-			//transform: translateY(4%);
 			opacity: 1;
 		}
 

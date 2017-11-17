@@ -249,6 +249,30 @@ if ( ! function_exists( 'electro_get_social_networks' ) ) {
 				'icon'	=> 'fa fa-stumbleupon',
 				'id'	=> 'stumble_upon_link'
 			),
+			'soundcloud'    => array(
+				'label' => esc_html__('Sound Cloud', 'electro'),
+				'id'    => 'soundcloud_link',
+				'icon'  => 'fa fa-soundcloud',
+			),
+
+			'vine'           => array(
+				'label' => esc_html__('Vine', 'electro'),
+				'id'    => 'vine_link',
+				'icon'  => 'fa fa-vine',
+			),
+
+			'vk'              => array(
+				'label' => esc_html__('VKontakte', 'electro'),
+				'id'    => 'vk_link',
+				'icon'  => 'fa fa-vk',
+			),
+
+			'telegram'        => array(
+				'label' => esc_html__('Telegram', 'electro'),
+				'id'    => 'telegram_link',
+				'icon'  => 'fa fa-telegram',
+			),
+
 			'rss'			=> array(
 				'label'	=> esc_html__( 'RSS', 'electro' ),
 				'icon'	=> 'fa fa-rss',
@@ -342,19 +366,41 @@ if( ! function_exists( 'is_yith_zoom_magnifier_activated' ) ) {
 }
 
 /**
+ * Checks if WooCommerce simple auction is activated
+ *
+ * @return boolean
+ */
+if( ! function_exists( 'is_wc_simple_auction_activated' ) ) {
+	function is_wc_simple_auction_activated() {
+		return is_woocommerce_extension_activated( 'WooCommerce_simple_auction' );
+	}
+}
+
+/**
  * Checks if WPML is activated
  *
  * @return  boolean
  */
 if( ! function_exists( 'is_wpml_activated' ) ) {
 	function is_wpml_activated() {
-		return function_exists( 'icl_object_id' );
+		return function_exists( 'icl_object_id' ) && class_exists('SitePress');
 	}
 }
 
 if ( ! function_exists( 'is_yith_wcan_activated' ) ) {
 	function is_yith_wcan_activated() {
 		return function_exists( 'YITH_WCAN' );
+	}
+}
+
+/**
+ * Checks if WooCommerce Product Reviews Pro is activated
+ *
+ * @return boolean
+ */
+if( ! function_exists( 'is_wc_product_reviews_activated' ) ) {
+	function is_wc_product_reviews_activated() {
+		return is_woocommerce_extension_activated( 'WC_Product_Reviews_Pro' );
 	}
 }
 
@@ -366,6 +412,15 @@ if ( ! function_exists( 'is_yith_wcan_activated' ) ) {
 if( ! function_exists( 'is_revslider_activated' ) ) {
 	function is_revslider_activated() {
 		return function_exists( 'putRevSlider' );
+	}
+}
+
+if( ! function_exists( 'is_ocdi_activated' ) ) {
+	/**
+	 * Check if One Click Demo Import is activated
+	 */
+	function is_ocdi_activated() {
+		return class_exists( 'OCDI_Plugin' ) ? true : false;
 	}
 }
 

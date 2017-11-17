@@ -106,6 +106,14 @@ $social_options 	= apply_filters( 'electro_social_media_options_args', array(
 			'type'      => 'text',
 			'icon'      => 'fa fa-vk',
 		),
+
+		array(
+			'title'     => esc_html__('Telegram', 'electro'),
+			'id'        => 'telegram',
+			'type'      => 'text',
+			'icon'      => 'fa fa-telegram',
+		),
+
 		array(
 			'id'		=> 'show_footer_rss_icon',
 			'type'		=> 'switch',

@@ -124,11 +124,12 @@ if( ! function_exists( 'electro_get_img_placeholder' ) ) {
 			$atts = $default_atts;
 		}
 
-		$width 		= absint( $atts[ 'width' ] );
-		$height 	= absint( $atts[ 'height' ] );
-		$bg_color	= str_replace( '#', '', $atts[ 'background-color' ] );
+		$width 		        = absint( $atts[ 'width' ] );
+		$height 	        = absint( $atts[ 'height' ] );
+		$bg_color	        = str_replace( '#', '', $atts[ 'background-color' ] );
+		$placeholder_domain = is_ssl() ? 'https://placehold.it/' : 'http://placehold.it';
 
-		$placeholder_url = 'http://placehold.it/' . $width . 'x' . $height . '/' . $bg_color . '/' . $bg_color . '/'; // color and bg color are same so that the text in placeholder is hidden and replaced with icon
+		$placeholder_url = $placeholder_domain . $width . 'x' . $height . '/' . $bg_color . '/' . $bg_color . '/'; // color and bg color are same so that the text in placeholder is hidden and replaced with icon
 
 		$img_tag = '<img src="' . esc_url( $placeholder_url ) . '" alt="">';
 

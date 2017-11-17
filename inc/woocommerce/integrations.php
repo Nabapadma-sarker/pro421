@@ -56,23 +56,9 @@ if ( is_yith_wcwl_activated() ) {
 		}
 	}
 
-	if( ! function_exists( 'electro_header_wishlist_link' ) ) {
-		function electro_header_wishlist_link() {
-			?>
-			<div class="wishlist">
-				<a id="yith-wishlist-link" href="<?php echo esc_url( electro_get_wishlist_url() ); ?>">
-					<i class="fa fa-heart"></i> 
-					<?php echo __( 'Wishlist', 'electro' ); ?> 
-					<span id="top-cart-wishlist-count" class="value">(<?php echo yith_wcwl_count_products(); ?>)</span> 
-				</a>
-			</div><!-- /.wishlist -->
-			<?php
-		}
-	}
-
 	if ( ! function_exists( 'electro_handheld_footer_bar_wishlist_link') ) {
 		function electro_handheld_footer_bar_wishlist_link() { ?>
-			<a href="<?php echo esc_attr( electro_get_wishlist_url() ); ?>" class="has-icon"><i class="ec ec-favorites"></i><span class="count"><?php echo yith_wcwl_count_products(); ?></span></a><?php
+			<a href="<?php echo esc_attr( electro_get_wishlist_url() ); ?>" class="has-icon"><i class="<?php echo esc_attr( apply_filters( 'electro_wishlist_icon', 'ec ec-favorites' ) ); ?>"></i><span class="count"><?php echo yith_wcwl_count_products(); ?></span></a><?php
 		}
 	}
 }
@@ -93,7 +79,7 @@ if( is_yith_woocompare_activated() ) {
 	function electro_add_to_compare_link() {
 		
 		global $product, $yith_woocompare;
-        $product_id = isset( $product->id ) ? $product->id : 0;
+		$product_id = electro_wc_get_product_id( $product );
 
         $button_text = get_option( 'yith_woocompare_button_text', __( 'Compare', 'electro' ) );
         $button_text = function_exists( 'icl_translate' ) ? icl_translate( 'Plugins', 'plugin_yit_compare_button_text', $button_text ) : $button_text;
@@ -163,25 +149,10 @@ if( is_yith_woocompare_activated() ) {
 		}
 	}
 
-	if( ! function_exists( 'electro_header_compare_link' ) ) {
-		function electro_header_compare_link() {
-			global $yith_woocompare;
-			?>
-			<div class="compare">
-	            <a id="yith-woocompare-link" href="<?php echo esc_url( electro_get_compare_page_url() ); ?>" class="compare">
-	                <i class="fa fa-exchange"></i>
-	                <?php echo __( 'Compare', 'electro' ); ?>
-	                <span id="top-cart-compare-count" class="value">(<?php echo count( $yith_woocompare->obj->products_list ); ?>)</span>
-	            </a>
-	        </div><!-- /.compare -->
-			<?php
-		}
-	}
-
 	if ( ! function_exists( 'electro_handheld_footer_bar_compare_link') ) {
 		function electro_handheld_footer_bar_compare_link() { 
 			global $yith_woocompare; ?>
-			<a href="<?php echo esc_attr( electro_get_compare_page_url() ); ?>" class="has-icon"><i class="ec ec-compare"></i><span class="count"><?php echo count( $yith_woocompare->obj->products_list ); ?></span></a><?php
+			<a href="<?php echo esc_attr( electro_get_compare_page_url() ); ?>" class="has-icon"><i class="<?php echo esc_attr( apply_filters( 'electro_compare_icon', 'ec ec-compare' ) ); ?>"></i><span class="count"><?php echo count( $yith_woocompare->obj->products_list ); ?></span></a><?php
 		}
 	}
 }
@@ -197,4 +168,56 @@ if ( is_yith_wcan_activated() ) {
 	function electro_wcan_wrap_end() {
 		?></div><!-- /.wcan-products-container --><?php
 	}
+
+	function electro_wcan_custom_scripts() {
+		if ( yith_wcan_can_be_displayed() ) {
+			$custom_script = "
+				(function($) {
+					$( document ).on( 'yith-wcan-ajax-filtered', function( e, response ) {
+						if ( $(response).find( '.wcan-products-container' ).length > 0 ) {
+							$( '.wcan-products-container' ).html( $(response).find( '.wcan-products-container' ).html() );
+						} else if ( $(response).find( '.woocommerce-info' ).length > 0 ) {
+							$( '.wcan-products-container' ).html( $(response).find( '.woocommerce-info' ) );
+						}
+					} );
+				})(jQuery);
+			";
+			wp_add_inline_script( 'electro-js', $custom_script );
+		}
+	}
+
+	add_action( 'wp_enqueue_scripts', 'electro_wcan_custom_scripts', 20 );
+}
+
+if ( is_wc_product_reviews_activated() ) {
+	add_filter( 'electro_use_advanced_reviews', '__return_false', 100 );
+}
+
+if ( is_wc_simple_auction_activated() ) {
+
+	function electro_wc_simple_auction_before_shop_loop() {
+		remove_action( 'woocommerce_before_shop_loop', 'woocommerce_auctions_ordering', 30, 0 );
+	}
+	add_action( 'woocommerce_before_shop_loop', 'electro_wc_simple_auction_before_shop_loop', 0 );
+
+	function electro_wc_simple_auction_wp_loaded() {
+		global $woocommerce_auctions;
+		remove_action( 'woocommerce_before_shop_loop_item_title', array( $woocommerce_auctions, 'add_winning_bage' ), 60 );
+	}
+	add_action( 'wp_loaded', 'electro_wc_simple_auction_wp_loaded' );
+	
+	function electro_template_loop_product_thumbnail_wc_simple_auction( $html ) {
+		global $woocommerce_auctions, $product;
+		
+		if( electro_wc_get_product_type( $product ) == 'auction' ) {
+			ob_start();
+			echo '<div class="product-thumbnail">';
+			$woocommerce_auctions->add_winning_bage();
+			echo woocommerce_get_product_thumbnail();
+			echo '</div>';
+			$html = ob_get_clean();
+		}
+		return $html;
+	}
+	add_filter( 'electro_template_loop_product_thumbnail', 'electro_template_loop_product_thumbnail_wc_simple_auction' );
 }

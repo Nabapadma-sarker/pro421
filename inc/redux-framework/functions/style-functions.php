@@ -29,18 +29,21 @@ if( ! function_exists( 'redux_apply_primary_color' ) ) {
 	}
 }
 
-function sass_darken( $hex, $percent ) {
-    preg_match( '/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i', $hex, $primary_colors );
-	str_replace( '%', '', $percent );
-	$color = "#";
-	for( $i = 1; $i <= 3; $i++ ) {
-		$primary_colors[$i] = hexdec( $primary_colors[$i] );
-		if ( $percent > 50 ) $percent = 50;
-		$dv = 100 - ( $percent * 2 );
-		$primary_colors[$i] = round( $primary_colors[$i] * ( $dv ) / 100 );
-		$color .= str_pad( dechex( $primary_colors[$i] ), 2, '0', STR_PAD_LEFT );
+if ( ! function_exists( 'sass_darken' ) ) {
+	function sass_darken( $hex, $percent ) {
+		preg_match( '/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i', $hex, $primary_colors );
+		str_replace( '%', '', $percent );
+		$percent = (int) $percent;
+		$color = "#";
+		for( $i = 1; $i <= 3; $i++ ) {
+			$primary_colors[$i] = hexdec( $primary_colors[$i] );
+			if ( $percent > 50 ) $percent = 50;
+			$dv = 100 - ( $percent * 2 );
+			$primary_colors[$i] = round( $primary_colors[$i] * ( $dv ) / 100 );
+			$color .= str_pad( dechex( $primary_colors[$i] ), 2, '0', STR_PAD_LEFT );
+		}
+		return $color;
 	}
-	return $color;
 }
 
 if ( ! function_exists( 'redux_apply_custom_color_css' ) ) {
@@ -82,7 +85,8 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		.widget_electro_products_filter .widget_layered_nav li.chosen > a::before,
 		.widget_electro_products_filter .widget_product_categories li.current-cat > a::before,
 		.features-list .media-left i,
-		p.stars a{
+		.secondary-nav>.dropdown.open >a::before,
+		p.stars a {
 			color: ' . $primary_color . ';
 		}
 
@@ -95,12 +99,15 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		.navbar-primary .navbar-nav > .menu-item .dropdown-menu,
 		.vertical-menu .menu-item-has-children > .dropdown-menu,
 		.departments-menu .menu-item-has-children:hover > .dropdown-menu,
-		.top-bar .nav-inline > .menu-item .dropdown-menu{
+		.top-bar .nav-inline > .menu-item .dropdown-menu,
+		.secondary-nav>.dropdown .dropdown-menu {
 			border-top-color: ' . $primary_color . ';
 		}
 
 		.columns-6-1 > ul.products > li.product .thumbnails > a:hover,
-		.primary-nav .nav-inline .yamm-fw.open > a::before {
+		.primary-nav .nav-inline .yamm-fw.open > a::before,
+		.columns-6-1>ul.products.product-main-6-1 .electro-wc-product-gallery__wrapper .electro-wc-product-gallery__image.flex-active-slide img,
+		.single-product .electro-wc-product-gallery .electro-wc-product-gallery__wrapper .electro-wc-product-gallery__image.flex-active-slide img {
 			border-bottom-color: ' . $primary_color . ';
 		}
 
@@ -127,6 +134,8 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		.widget.widget_tag_cloud .tagcloud a:hover,
 		.widget.widget_tag_cloud .tagcloud a:focus,
 		.navbar-mini-cart .cart-items-count,
+		.navbar-compare .count,
+		.navbar-wishlist .count,
 		.wc-tabs > li.active a::before,
 		.ec-tabs > li.active a::before,
 		.woocommerce-info,
@@ -134,6 +143,8 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		p.no-comments,
 		.products-2-1-2 .nav-link:hover::before,
 		.single_add_to_cart_button,
+		.section-onsale-product-carousel .onsale-product-carousel .onsale-product .onsale-product-content .deal-cart-button .button,
+		.section-onsale-product-carousel .onsale-product-carousel .onsale-product .onsale-product-content .deal-cart-button .added_to_cart,
 		.wpb-accordion .vc_tta.vc_general .vc_tta-panel.vc_active .vc_tta-panel-heading .vc_tta-panel-title > a i,
 		ul.products > li.product.list-view:not(.list-view-small) .button:hover,
 		ul.products > li.product.list-view:not(.list-view-small) .button:focus,
@@ -151,7 +162,8 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		.handheld-navigation-wrapper .stuck button, 
 		.handheld-navigation-wrapper.toggled .stuck .navbar-toggler, 
 		.handheld-navigation-wrapper.toggled .stuck button,
-		.da .da-action>a::after  {
+		.da .da-action>a::after,
+		.demo_store  {
 			background-color: ' . $primary_color . ';
 		}
 
@@ -213,9 +225,12 @@ if ( ! function_exists( 'redux_get_custom_color_css' ) ) {
 		.sidebar-blog .widget-title::after,
 		.contact-page-title::after,
 		#reviews:not(.electro-advanced-reviews) #comments > h2::after,
+		.cpf-type-range .tm-range-picker .noUi-origin .noUi-handle,
 		.widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-prev:hover,
 		.widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-next:hover,
-		.wpb-accordion .vc_tta.vc_general .vc_tta-panel.vc_active .vc_tta-panel-heading .vc_tta-panel-title > a i {
+		.wpb-accordion .vc_tta.vc_general .vc_tta-panel.vc_active .vc_tta-panel-heading .vc_tta-panel-title > a i,
+		.single-product .woocommerce-tabs+section.products>h2::after,
+		.single-product .electro-tabs+section.products>h2::after {
 			border-color: ' . $primary_color . ';
 		}
 

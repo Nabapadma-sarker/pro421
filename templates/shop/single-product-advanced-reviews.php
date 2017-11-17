@@ -35,7 +35,7 @@ if ( ! comments_open() ) {
 					</div>
 					<?php 
 						$rating_percentage = 0;
-						if ( isset( $rating_counts[$rating] ) ) {
+						if ( isset( $rating_counts[$rating] ) && $review_count > 0 ) {
 							$rating_percentage = (round( $rating_counts[$rating] / $review_count, 2 ) * 100 );
 						}
 					?>
@@ -53,7 +53,7 @@ if ( ! comments_open() ) {
 		</div>
 		<div class="col-xs-12 col-md-6">
 			
-			<?php if ( get_option( 'woocommerce_review_rating_verification_required' ) === 'no' || wc_customer_bought_product( '', get_current_user_id(), $product->id ) ) : ?>
+			<?php if ( get_option( 'woocommerce_review_rating_verification_required' ) === 'no' || wc_customer_bought_product( '', get_current_user_id(), electro_wc_get_product_id( $product ) ) ) : ?>
 
 			<div id="review_form_wrapper">
 				<div id="review_form">

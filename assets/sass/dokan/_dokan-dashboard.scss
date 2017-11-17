@@ -334,3 +334,45 @@ ul.order-statuses-filter {
 		}
 	}
 }
+
+.dokan-product-edit-area header.dokan-pro-edit-breadcrumb h1 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+
+    .dokan-right {
+        flex-grow: 1;
+        text-align: right;
+
+        a {
+            padding: 0.6em 2.4em;
+            font-weight: 600;
+            &:hover {
+                color: #333e48;
+            }
+        }
+    }
+}
+
+.dokan-product-edit-area .dokan-edit-sidebar {
+    .dokan-btn-theme{
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+.dokan-product-shipping {
+    .dokan-form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-dimension {
+        .form-control {
+            line-height: 1;
+            border-radius: 2em;
+            padding: 0.4em 1em;
+            border-width: 1px;
+        }
+    }
+}

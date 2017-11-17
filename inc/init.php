@@ -60,6 +60,7 @@ require get_template_directory() . '/inc/structure/footer.php';
  * Load WooCommerce compatibility files.
  */
 if ( is_woocommerce_activated() ) {
+	require get_template_directory() . '/inc/woocommerce/classes/class-electro-shortcode-products.php';
 	require get_template_directory() . '/inc/woocommerce/classes/class-electro-products.php';
 	require get_template_directory() . '/inc/woocommerce/class-electro-wc-helper.php';
 	require get_template_directory() . '/inc/woocommerce/class-electro-woocommerce.php';
@@ -82,6 +83,16 @@ if ( is_dokan_activated() ) {
  * WPML.
  * Load WPML compatibility files.
  */
-if ( is_wpml_activated() ) {
+if ( apply_filters( 'electro_load_wpml', false ) && is_wpml_activated() ) {
 	require get_template_directory() . '/inc/wpml/class-electro-wpml.php';
 }
+
+/**
+ * One Click Demo Import
+ */
+if ( is_ocdi_activated() ) {
+	require get_template_directory() . '/inc/ocdi/hooks.php';
+	require get_template_directory() . '/inc/ocdi/functions.php';
+}
+
+require get_template_directory() . '/inc/other-plugins/compatibility.php';

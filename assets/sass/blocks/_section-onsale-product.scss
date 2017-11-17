@@ -35,7 +35,9 @@
 			display: block;
 		}
 
-		h3 {
+		h3,
+		h2,
+		.woocommerce-loop-product__title {
 			clear: both;
 			text-align: center;
 			margin-bottom: 1.214em;

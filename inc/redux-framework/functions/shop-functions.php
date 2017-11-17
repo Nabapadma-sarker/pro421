@@ -20,10 +20,13 @@ if( ! function_exists( 'redux_toggle_shop_catalog_mode' ) ) {
 function redux_apply_catalog_mode_for_product_loop( $product_link, $product ) {
 	global $electro_options;
 
+	$product_id = electro_wc_get_product_id( $product );
+	$product_type = electro_wc_get_product_type( $product );
+
 	if( isset( $electro_options['catalog_mode'] ) && $electro_options['catalog_mode'] == '1' ) {
 		$product_link = sprintf( '<a href="%s" class="button product_type_%s">%s</a>',
-			get_permalink( $product->id ),
-			esc_attr( $product->product_type ),
+			get_permalink( $product_id ),
+			esc_attr( $product_type ),
 			apply_filters( 'electro_catalog_mode_button_text', esc_html__( 'View Product', 'electro' ) )
 		);
 	}
@@ -188,6 +191,20 @@ if ( ! function_exists( 'redux_apply_single_product_layout_style' ) ) {
 		}
 
 		return $single_product_style;
+	}
+}
+
+if ( ! function_exists( 'redux_toggle_wc_product_thumbnails_carousel' ) ) {
+	function redux_toggle_wc_product_thumbnails_carousel() {
+		global $electro_options;
+
+		if( isset( $electro_options['product_gallery_carousel'] ) && $electro_options['product_gallery_carousel'] == '1' ) {
+			$gallery_carousel = true;
+		} else {
+			$gallery_carousel = false;
+		}
+
+		return $gallery_carousel;
 	}
 }
 

@@ -237,3 +237,114 @@
 		}
 	}
 }
+
+#reviews:not(.electro-advanced-reviews) {
+	h2 {
+	    font-size: 1.786em;
+	    line-height: 1.6em;
+	    color: #333e48;
+	    position: relative;
+	    margin-bottom: 1.5em;
+	    border-bottom: 1px solid #dddddd;
+	    padding-bottom: 0.3em;
+	    text-align: center;
+	}
+
+	.product-rating {
+		h3 {
+		    font-size: 1.5em;
+		}
+
+		.product-rating-details {
+			table tr {
+				.rating-number a {
+				    color: #b6b6b6;
+
+					.rating-star:before {
+					    color: #fed700;
+					}
+				}
+
+				.rating-graph {
+					a.bar {
+					    background-color: #ebebeb;
+					    border-radius: .386em;
+				        height: .8em;
+					}
+				}
+
+				.rating-count {
+					a {
+					    text-decoration: none;
+					    color: #b6b6b6;
+					}
+				}
+			}
+		}
+	}
+
+	h3 {
+		font-size: 1.438em;
+	    line-height: 1.6em;
+	    color: #333e48;
+	    position: relative;
+	}
+
+	form {
+		#subscribe_to_replies_field  label {
+			margin-left: 1.4em;
+		}
+	}
+
+	abbr[title] {
+		border: 0px;
+	    text-decoration: none;
+	}
+
+	#comments {
+		form.contributions-filter {
+		    display: none;
+		}
+
+		#contributions-list {
+			h2#contributions-list-title {
+			    display: none;
+			}
+
+			.contributions-container {
+				.contribution-admin-badge {
+			    	opacity: 0.6;
+			    }
+
+				ul.children {
+				    border-top: 0px;
+				    width: 100%;
+				    float: none;
+				    padding: 1.5em 0px;
+				}
+
+				ol li {
+					.contribution-karma {
+						display: none;
+					}
+
+					.comment-text {
+					    margin-left: 0px;
+
+					    h3.review-title {
+				    	    font-size: 14px;
+
+				    	    span {
+			    	    	    margin-bottom: 0px;
+				    	    }
+					    }					   
+					}
+
+					form {
+					    margin-left: 0px;
+					}
+				}
+			}
+		}
+	}
+}

@@ -165,7 +165,13 @@ function electro_get_home_v3_meta( $merge_default = true ) {
 	global $post;
 
 	if ( isset( $post->ID ) ){
-		$home_v3_options = json_decode( get_post_meta( $post->ID, '_home_v3_options', true ), true );
+		
+		$clean_home_v3_options = get_post_meta( $post->ID, '_home_v3_options', true );
+		$home_v3_options = maybe_unserialize( $clean_home_v3_options );
+
+		if( ! is_array( $home_v3_options ) ) {
+			$home_v3_options = json_decode( $clean_home_v3_options, true );
+		}
 	
 		if ( $merge_default ) {
 			$default_options = electro_get_default_home_v3_options();
@@ -409,6 +415,9 @@ if ( ! function_exists( 'electro_products_carousel_with_image' ) ) {
 						<div class="products-carousel-block col-xs-12 col-sm-6">
 							<?php
 
+								$limit 			= isset( $home_v3['pci']['carousel']['product_limit'] ) ? $home_v3['pci']['carousel']['product_limit'] : 6;
+								$columns 		= isset( $home_v3['pci']['carousel']['product_columns'] ) ? $home_v3['pci']['carousel']['product_columns'] : 2;
+
 								$args = array(
 									'section_args' 	=> array(
 										'section_title'		=> isset( $home_v3['pci']['carousel']['section_title'] ) ? $home_v3['pci']['carousel']['section_title'] : esc_html__( 'Hoodies', 'electro' ),
@@ -422,13 +431,10 @@ if ( ! function_exists( 'electro_products_carousel_with_image' ) ) {
 											'480'	=> array( 'items'	=> 1 ),
 											'768'	=> array( 'items'	=> 1 ),
 											'992'	=> array( 'items'	=> 3 ),
-											'1200' 	=> array( 'items' 	=> 2 )
+											'1200' 	=> array( 'items' 	=> $columns )
 										)
 									),
 								);
-
-								$limit 			= isset( $home_v3['pci']['carousel']['product_limit'] ) ? $home_v3['pci']['carousel']['product_limit'] : 6;
-								$columns 		= isset( $home_v3['pci']['carousel']['product_columns'] ) ? $home_v3['pci']['carousel']['product_columns'] : 2;
 
 								$shortcode 		= isset( $home_v3['pci']['carousel']['content']['shortcode'] ) ? $home_v3['pci']['carousel']['content']['shortcode'] : 'product_category';
 

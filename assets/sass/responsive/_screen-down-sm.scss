@@ -120,8 +120,8 @@
 
 	.header-v1,
 	.header-v3 {
-
-		& + .navbar-primary {
+		& + .navbar-primary,
+		& + .sticky-wrapper > .navbar-primary {
 			padding: 0.358em 1rem;
 		}
 	}

@@ -130,6 +130,39 @@
 	}
 }
 
+.widget_layered_nav {
+	.woocommerce-widget-layered-nav-dropdown__submit {
+		margin-top: 15px;
+	}
+
+	.select2-selection--multiple {
+		.select2-selection__rendered {
+			li {
+				line-height: 1;
+			    font-size: 12px;
+			}
+		}
+	}
+
+	.select2-container .select2-selection, .woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection {
+		padding: 8px;
+	}
+
+	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+		margin-right: 4px;
+	}
+}
+
+.widget_electro_products_filter {
+	.widget_layered_nav,
+	.widget_product_categories {
+		.select2-selection--multiple li>a::before,
+		.select2-selection--multiple li>span:not(.count)::before {
+			display: none;
+		}
+	}
+}
+
 .widget_product_categories {
 	ul {
 		list-style: none;
@@ -449,7 +482,8 @@
 	.product-carousel-alt {
 		text-align: center;
 
-		h3 {
+		h3,
+		.woocommerce-loop-product__title {
 			font-size: 1.071em;
 			margin-bottom: 1.667em;
 			padding: 0 2.857em;

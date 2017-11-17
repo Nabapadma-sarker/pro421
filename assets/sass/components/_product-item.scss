@@ -30,7 +30,6 @@ li.product {
 		display: none;
 		border: none;
 		position: relative;
-		text-align: center;
 		background-color: #FFF;
 
 		.button {
@@ -47,9 +46,11 @@ li.product {
 
 		.action-buttons {
 			width: 100%;
-			text-align: center;
 			font-size: 0.929em;
 			line-height: 1.385em;
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
 
 			.clear {
 				display: none;
@@ -62,9 +63,11 @@ li.product {
 			}
 
 			> div, > a {
-				display: inline-block;
-				margin: dir-values(0 5px);
 				padding-top: 0.571em;
+			}
+
+			.clear {
+				display: none;
 			}
 
 			a:hover {
@@ -100,7 +103,8 @@ li.product {
 		}
 	}
 
-	h3 {
+	h3,
+	.woocommerce-loop-product__title {
 		font-size: 1.071em;
 		line-height: 1.286em;
 		font-weight: bold;
@@ -162,20 +166,11 @@ li.product {
 
 	.price-add-to-cart {
 		clear: both;
-		@include clearfix;
 		margin-bottom: 0.929em;
 		position: relative;
-
-		.electro-price {
-			line-height: 36px;
-		}
-
-		> .price {
-			display: block;
-			float: $start;
-			width: calc( 100% - 41px );
-			white-space: nowrap;
-		}
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 
 	.price {
@@ -204,7 +199,6 @@ li.product {
 	}
 
 	.added_to_cart, .button {
-		//font-size: 0;
 		float: $end;
 		background-color: transparent;
 		text-indent: -99999px;
@@ -217,7 +211,6 @@ li.product {
 		&::before {
 			display: inline-block;
 			@include fa-icon();
-			//font-family: "font-electro";
 			background-color: #e6e6e6;
 			border-radius: 50%;
 			color: #fff;
@@ -226,7 +219,7 @@ li.product {
 		}
 	}
 
-	.added_to_cart {
+	.added_to_cart, .button {
 		&::before {
 			content: "\f178";
 			padding: 0.5em 0.504em;

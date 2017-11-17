@@ -59,7 +59,11 @@ if ( ! function_exists( 'electro_get_sidebar_area' ) ) {
 
 if ( ! function_exists( 'electro_get_blog_layout' ) ) {
 	function electro_get_blog_layout() {
-		return apply_filters( 'electro_blog_layout', 'right-sidebar' );
+		if ( is_single() ) {
+			return electro_get_single_post_layout();
+		} else {
+			return apply_filters( 'electro_blog_layout', 'right-sidebar' );
+		}
 	}
 }
 

@@ -189,13 +189,43 @@ label {
     border-color: #66afe9;
     outline: none; }
 
-.select2-container .select2-choice {
+.woocommerce-widget-layered-nav-dropdown .select2-container:focus,
+.select2-container:focus {
+  outline: none; }
+
+.woocommerce-widget-layered-nav-dropdown .select2-container .select2-choice,
+.woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection,
+.select2-container .select2-choice,
+.select2-container .select2-selection {
   font-size: 1em;
   line-height: 1.286em;
   border: 1px solid #ddd;
-  padding: 0.858em 1.858em;
-  border-radius: 1.286em;
   width: 100%; }
+
+.woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection,
+.select2-container .select2-selection {
+  padding: 8px 18px; }
+  .woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection .select2-selection__arrow,
+  .select2-container .select2-selection .select2-selection__arrow {
+    top: 0;
+    right: 10px;
+    height: 44px; }
+  .woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection.select2-selection--single,
+  .select2-container .select2-selection.select2-selection--single {
+    height: 44px;
+    border-radius: 50px; }
+  .woocommerce-widget-layered-nav-dropdown .select2-container .select2-selection.select2-selection--multiple,
+  .select2-container .select2-selection.select2-selection--multiple {
+    border-radius: 3px;
+    border: 1px solid #ddd; }
+
+.woocommerce-widget-layered-nav-dropdown .select2-container .select2-choice,
+.select2-container .select2-choice {
+  padding: 0.858em 1.858em; }
+
+.woocommerce-widget-layered-nav-dropdown .select2-container--open .select2-selection.select2-selection--single,
+.select2-container--open .select2-selection.select2-selection--single {
+  border-radius: 20px; }
 
 textarea.input-text {
   min-height: 10em;
@@ -488,6 +518,8 @@ input[type="submit"] {
   @media (min-width: 768px) {
     .form-row {
       width: 100%; } }
+  .form-row label:not(.inline) {
+    display: block; }
 
 #billing_address_2_field {
   margin-top: -0.714em; }
@@ -496,6 +528,10 @@ input[type="submit"] {
   .form-row-first,
   .form-row-last {
     width: 50%; } }
+
+.form-row-wide {
+  clear: both;
+  width: 100%; }
 
 .form-row {
   padding-left: 0;
@@ -582,16 +618,20 @@ fieldset {
         width: 25%;
         right: 75%; } }
 
+.error404 #content #primary,
 .page-template-template-homepage-v1 #content #primary,
 .page-template-template-homepage-v3 #content #primary,
 .page-template-default #content #primary,
-.full-width #content #primary {
+.full-width #content #primary,
+.page-template-template-page-blank #content #primary {
   padding-left: 0; }
   @media (min-width: 768px) {
+    .error404 #content #primary,
     .page-template-template-homepage-v1 #content #primary,
     .page-template-template-homepage-v3 #content #primary,
     .page-template-default #content #primary,
-    .full-width #content #primary {
+    .full-width #content #primary,
+    .page-template-template-page-blank #content #primary {
       width: 100%;
       left: auto; } }
 
@@ -802,12 +842,15 @@ dl.variation {
     dl.variation dd p {
       margin: 0; }
 
+p.in-stock,
 .in-stock span {
   color: #5cb85c; }
 
+p.out-of-stock,
 .out-of-stock span {
   color: #d9534f; }
 
+p.available-on-backorder,
 .available-on-backorder span {
   color: #f0ad4e; }
 
@@ -1165,6 +1208,33 @@ ul.order-statuses-filter > li > a {
   .order_download_permissions .dokan-btn:hover,
   .order_download_permissions .dokan-btn:focus {
     color: #fff; }
+
+.dokan-product-edit-area header.dokan-pro-edit-breadcrumb h1 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0; }
+  .dokan-product-edit-area header.dokan-pro-edit-breadcrumb h1 .dokan-right {
+    flex-grow: 1;
+    text-align: right; }
+    .dokan-product-edit-area header.dokan-pro-edit-breadcrumb h1 .dokan-right a {
+      padding: 0.6em 2.4em;
+      font-weight: 600; }
+      .dokan-product-edit-area header.dokan-pro-edit-breadcrumb h1 .dokan-right a:hover {
+        color: #333e48; }
+
+.dokan-product-edit-area .dokan-edit-sidebar .dokan-btn-theme {
+  width: 100%;
+  margin-bottom: 10px; }
+
+.dokan-product-shipping .dokan-form-group {
+  display: flex;
+  align-items: center; }
+
+.dokan-product-shipping .product-dimension .form-control {
+  line-height: 1;
+  border-radius: 2em;
+  padding: 0.4em 1em;
+  border-width: 1px; }
 
 .electro-tabs #tab-seller.electro-tab .tab-content h2, .electro-tabs #tab-seller #tab-seller h2, .woocommerce-tabs.electro-tab .tab-content h2, .woocommerce-tabs #tab-seller h2 {
   color: #333e48;

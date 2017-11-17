@@ -13,3 +13,5 @@ add_filter( 'electro_show_shop_sidebar', 			'electro_dokan_toggle_shop_sidebar',
 add_action( 'widgets_init',							'electro_setup_dokan_sidebars',			10 );
 
 add_filter( 'body_class',							'electro_dokan_body_classes',			100 );
+
+add_action( 'dokan_product_edit_after_inventory_variants', 'electro_dokan_product_edit_add_specifications', 10, 2 );

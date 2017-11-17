@@ -123,11 +123,12 @@ if ( ! function_exists( 'electro_single_product_action' ) ) {
 if( ! function_exists( 'electro_template_single_add_to_cart' ) ) {
 	function electro_template_single_add_to_cart() {
 		global $product;
-		
+
+		$product_type = electro_wc_get_product_type( $product );
 		if( electro_get_shop_catalog_mode() == false ) {
-			do_action( 'woocommerce_' . $product->product_type . '_add_to_cart'  );
+			do_action( 'woocommerce_' . $product_type . '_add_to_cart'  );
 		} elseif( electro_get_shop_catalog_mode() == true && $product->is_type( 'external' ) ) {
-			do_action( 'woocommerce_' . $product->product_type . '_add_to_cart'  );
+			do_action( 'woocommerce_' . $product_type . '_add_to_cart'  );
 		}
 	}
 }
@@ -200,7 +201,7 @@ if ( ! function_exists( 'electro_template_single_brand' ) ) {
 
 		global $product;
 	
-		$product_id = isset($product_id) ? $product_id : $product->id;
+		$product_id = electro_wc_get_product_id( $product );
 		$brands_tax = electro_get_brands_taxonomy();
 		$terms 		= get_the_terms( $product_id, $brands_tax );
 		$brand_img 	= '';

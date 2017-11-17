@@ -82,17 +82,18 @@ if( class_exists( 'WP_Widget' ) ) :
 				$show_all_categories_text = apply_filters( 'electro_product_categories_widget_show_all_categories_text', esc_html__( 'Show All Categories', 'electro' ) );
 
 				// Top level is needed
-				$top_level = wp_list_categories( array(
-					'title_li'     => sprintf( '<span class="show-all-cat-dropdown">%1$s</span>', $show_all_categories_text ),
-					'taxonomy'     => 'product_cat',
-					'parent'       => 0,
-					'hierarchical' => true,
-					'hide_empty'   => false,
-					'exclude'      => $this->current_cat->term_id,
-					'show_count'   => $count,
-					'hide_empty'   => $hide_empty,
-					'echo'         => false
-				) );
+				$top_level = wp_list_categories( apply_filters( 'electro_product_categories_widget_top_level_list_categories_args', array(
+					'title_li'           => sprintf( '<span class="show-all-cat-dropdown">%1$s</span>', $show_all_categories_text ),
+					'taxonomy'           => 'product_cat',
+					'parent'             => 0,
+					'hierarchical'       => true,
+					'hide_empty'         => false,
+					'exclude'            => $this->current_cat->term_id,
+					'show_count'         => $count,
+					'hide_empty'         => $hide_empty,
+					'echo'               => false,
+					'use_desc_for_title' => 0
+				) ) );
 
 				$list_args['title_li'] = '<ul class="show-all-cat">' . $top_level . '</ul>';
 
@@ -141,7 +142,7 @@ if( class_exists( 'WP_Widget' ) ) :
 			$list_args['pad_counts']                 = 1;
 			$list_args['show_option_none']           = esc_html__('No product categories exist.', 'electro' );
 			$list_args['current_category']           = ( $this->current_cat ) ? $this->current_cat->term_id : '';
-			$list_args['use_desc_for_title']         = apply_filters( 'electro_use_desc_for_title_product_categories_widget', 1 );
+			$list_args['use_desc_for_title']         = apply_filters( 'electro_use_desc_for_title_product_categories_widget', 0 );
 
 			echo wp_kses_post( $args['before_widget'] );
 

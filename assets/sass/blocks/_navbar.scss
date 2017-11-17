@@ -20,7 +20,7 @@
 			position: relative;
 		}
 	}
-	
+
 	.navbar-nav .nav-link {
 		line-height: 2.143em;
 		font-weight: bold;
@@ -86,13 +86,20 @@
 		}
 	}
 
+	.navbar-compare .count,
+	.navbar-wishlist .count {
+		background-color: $color-body;
+		color: #fff;
+	}
+
 	.nav:before,
 	.nav:after {
 		display: none;
 	}
 }
 
-.header-v1 + .navbar-primary {
+.header-v1 + .navbar-primary,
+.header-v1 + .sticky-wrapper > .navbar-primary {
 	padding: 0;
 }
 
@@ -168,6 +175,30 @@
 .navbar-compare i.ec {
 	line-height: 0.9em;
 	font-size: 1.429em;
+}
+
+.navbar-search .input-group .form-control:last-child {
+    border-top-left-radius: 2.467em;
+    border-bottom-left-radius: 2.467em;
+}
+
+.navbar-compare,
+.navbar-wishlist {
+	.nav-link {
+		position: relative;
+	}
+
+	.count {
+		font-size: .75em;
+		line-height: 1.75em;
+		font-weight: 700;
+		position: absolute;
+		left: 7px;
+		width: 1.75em;
+		text-align: center;
+		border-radius: 50%;
+		bottom: 4px;
+	}
 }
 
 .primary-nav .nav-inline .yamm-fw.open > a {

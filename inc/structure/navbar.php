@@ -70,10 +70,16 @@ if ( ! function_exists( 'electro_navbar_compare' ) ) {
 	 */
 	function electro_navbar_compare() {
 		if( function_exists( 'electro_get_compare_page_url' ) ) {
+			global $yith_woocompare;
 			?>
 			<ul class="navbar-compare nav navbar-nav pull-right flip">
 				<li class="nav-item">
-					<a href="<?php echo esc_attr( electro_get_compare_page_url() ); ?>" class="nav-link"><i class="ec ec-compare"></i></a>
+					<a href="<?php echo esc_attr( electro_get_compare_page_url() ); ?>" class="nav-link">
+						<i class="<?php echo esc_attr( apply_filters( 'electro_compare_icon', 'ec ec-compare' ) ); ?>"></i>
+						<?php if ( apply_filters( 'electro_show_compare_count', false ) ) : ?>
+						<span class="navbar-compare-count count" class="value"><?php echo count( $yith_woocompare->obj->products_list ); ?></span>
+						<?php endif; ?>
+					</a>
 				</li>
 			</ul>
 			<?php
@@ -90,7 +96,12 @@ if ( ! function_exists( 'electro_navbar_wishlist' ) ) {
 			?>
 			<ul class="navbar-wishlist nav navbar-nav pull-right flip">
 				<li class="nav-item">
-					<a href="<?php echo esc_attr( electro_get_wishlist_url() ); ?>" class="nav-link"><i class="ec ec-favorites"></i></a>
+					<a href="<?php echo esc_attr( electro_get_wishlist_url() ); ?>" class="nav-link">
+						<i class="<?php echo esc_attr( apply_filters( 'electro_wishlist_icon', 'ec ec-favorites' ) ); ?>"></i>
+						<?php if ( apply_filters( 'electro_show_wishlist_count', false ) ) : ?>
+						<span class="navbar-wishlist-count count" class="value"><?php echo yith_wcwl_count_products(); ?></span> 
+						<?php endif; ?>
+					</a>
 				</li>
 			</ul>
 			<?php

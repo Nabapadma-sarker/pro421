@@ -17,7 +17,7 @@ remove_action( 'electro_content_top', 'electro_breadcrumb', 10 );
 do_action( 'electro_before_homepage_v3' );
 
 $home_v3 		= electro_get_home_v3_meta();
-$header_style 	= isset( $home_v3['header_style'] ) && ( $home_v3['header_style'] == 'v4' ) ? 'v4' : 'v3';
+$header_style 	= isset( $home_v3['header_style'] ) ? $home_v3['header_style'] : 'v3';
 
 get_header( $header_style ); ?>
 
